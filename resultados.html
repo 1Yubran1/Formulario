@@ -31,11 +31,71 @@
                 const resultsBody = document.getElementById('results-body');
                 const results1 = results.form1 || {};
                 const results2 = results.form2 || {};
+                const results3 = results.form3 || {};
+                const results4 = results.form4 || {};
+                const results5 = results.form5 || {};
+                const results6 = results.form6 || {};
+                const results7 = results.form7 || {};
+                const results8 = results.form8 || {};
+                const results9 = results.form9 || {};
+                const results10 = results.form10 || {};
+                const results11 = results.form11 || {};
+                const results12 = results.form12 || {};
+                const results13 = results.form13 || {};
+                const results14 = results.form14 || {};
+                const results15 = results.form15 || {};
+                const results16 = results.form16 || {};
+                const results17 = results.form17 || {};
+                const results18 = results.form18 || {};
+                const results19 = results.form19 || {};
+                const results20 = results.form20 || {};
+                const results21 = results.form21 || {};
+                const results22 = results.form22 || {};
+                const results23 = results.form23 || {};
+                const results24 = results.form24 || {};
+                const results25 = results.form25 || {};
+                const results26 = results.form26 || {};
+                const results27 = results.form27 || {};
+                const results28 = results.form28 || {};
+                const results29 = results.form29 || {};
+                const results30 = results.form30 || {};
 
                 for (let i = 1; i <= 60; i++) {
                     const points1 = results1[`team${i}`] || 0;
                     const points2 = results2[`team${i}`] || 0;
-                    const totalPoints = points1 + points2;
+                    const points3 = results3[`team${i}`] || 0;
+                    const points4 = results4[`team${i}`] || 0;
+                    const points5 = results5[`team${i}`] || 0;
+                    const points6 = results6[`team${i}`] || 0;
+                    const points7 = results7[`team${i}`] || 0;
+                    const points8 = results8[`team${i}`] || 0;
+                    const points9 = results9[`team${i}`] || 0;
+                    const points10 = results10[`team${i}`] || 0;
+                    const points11 = results11[`team${i}`] || 0;
+                    const points12 = results12[`team${i}`] || 0;
+                    const points13 = results13[`team${i}`] || 0;
+                    const points14 = results14[`team${i}`] || 0;
+                    const points15 = results15[`team${i}`] || 0;
+                    const points16 = results16[`team${i}`] || 0;
+                    const points17 = results17[`team${i}`] || 0;
+                    const points18 = results18[`team${i}`] || 0;
+                    const points19 = results19[`team${i}`] || 0;
+                    const points20 = results20[`team${i}`] || 0;
+                    const points21 = results21[`team${i}`] || 0;
+                    const points22 = results22[`team${i}`] || 0;
+                    const points23 = results23[`team${i}`] || 0;
+                    const points24 = results24[`team${i}`] || 0;
+                    const points25 = results25[`team${i}`] || 0;
+                    const points26 = results26[`team${i}`] || 0;
+                    const points27 = results27[`team${i}`] || 0;
+                    const points28 = results28[`team${i}`] || 0;
+                    const points29 = results29[`team${i}`] || 0;
+                    const points30 = results30[`team${i}`] || 0;
+
+                    const totalPoints = points1 + points2 + points3 + points4 + points5 + points6 + points7 + points8 +
+                    points9 + points10 + points11 + points12 + points13 + points14 + points15 + points16 + points17 +
+                    points18 + points19 + points20 + points21 + points22 + points23 + points24 + points25 + points26 +
+                    points27 + points28 + points29 + points30;
 
                     const progressClass = totalPoints >= 15 ? 'bg-success' :
                                           totalPoints >= 10 ? 'bg-info text-dark' :
