@@ -25,33 +25,37 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        fetch('http://localhost:5500/results')
+        fetch('http://localhost:3000/results')
             .then(response => response.json())
             .then(results => {
                 const resultsBody = document.getElementById('results-body');
                 const results1 = results.form1 || {};
                 const results2 = results.form2 || {};
 
-                for (let i = 1; i <= 10; i++) {
+                for (let i = 1; i <= 60; i++) {
                     const points1 = results1[`team${i}`] || 0;
                     const points2 = results2[`team${i}`] || 0;
                     const totalPoints = points1 + points2;
 
                     const progressClass = totalPoints >= 15 ? 'bg-success' :
                                           totalPoints >= 10 ? 'bg-info text-dark' :
-                                          totalPoints >= 5 ? 'bg-warning text-dark' : 
-                                                             'bg-danger';
-                    
-                    const progressBar = `
-                        <div class="progress" role="progressbar" aria-label="Equipo ${i}" aria-valuenow="${totalPoints}" aria-valuemin="0" aria-valuemax="20">
-                            <div class="progress-bar ${progressClass}" style="width: ${totalPoints / 20 * 100}%">${totalPoints} puntos</div>
+                                          totalPoints >= 5 ? 'bg-warning text-dark' :
+                                          'bg-danger';
+
+                    const progressBar = document.createElement('div');
+                    progressBar.className = 'progress';
+                    progressBar.setAttribute('role', 'progressbar');
+                    progressBar.setAttribute('aria-valuenow', totalPoints);
+                    progressBar.setAttribute('aria-valuemin', '0');
+                    progressBar.setAttribute('aria-valuemax', '20');  // Máximo total de puntos posibles
+                    progressBar.innerHTML = `
+                        <div class="progress-bar ${progressClass}" style="width: ${(totalPoints / 20) * 100}%">
+                            Equipo ${i}: ${totalPoints} puntos
                         </div>
                     `;
-                    resultsBody.insertAdjacentHTML('beforeend', progressBar);
+
+                    resultsBody.appendChild(progressBar);
                 }
-            })
-            .catch(error => {
-                console.error('Error:', error);
             });
     });
 </script>
