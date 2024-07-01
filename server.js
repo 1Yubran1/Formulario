@@ -229,7 +229,7 @@ app.get('/results', (req, res) => {
 });
 
 // Servir archivos estáticos
-app.use(express.static(''));
+app.use(express.static('public'));
 
 // Servir el archivo index.html
 app.get('/', (req, res) => {
