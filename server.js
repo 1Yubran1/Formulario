@@ -1,6 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const path = require('path');
+
 const app = express();
 const port = 3000;
 
@@ -226,8 +228,13 @@ app.get('/results', (req, res) => {
     res.json(results);
 });
 
-// Servir archivos estáticos (opcional, si necesitas servir archivos HTML)
+// Servir archivos estáticos
 app.use(express.static('public'));
+
+// Servir el archivo index.html
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
