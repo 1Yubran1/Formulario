@@ -229,11 +229,134 @@ app.get('/results', (req, res) => {
 });
 
 // Servir archivos estáticos
-app.use(express.static('public'));
+app.use(express.static(''));
 
 // Servir el archivo index.html
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Servir formularios específicos
+app.get('/form1', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form1.html'));
+});
+
+app.get('/form2', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form2.html'));
+});
+
+// Añade más rutas para los demás formularios según sea necesario
+// Ejemplo:
+app.get('/form3', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form3.html'));
+});
+
+app.get('/form4', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form4.html'));
+});
+
+app.get('/form5', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form5.html'));
+});
+
+app.get('/form6', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form6.html'));
+});
+
+app.get('/form7', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form7.html'));
+});
+
+app.get('/form8', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form8.html'));
+});
+
+app.get('/form9', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form9.html'));
+});
+
+app.get('/form10', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form10.html'));
+});
+
+app.get('/form11', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form11.html'));
+});
+
+app.get('/form12', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form12.html'));
+});
+
+app.get('/form13', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form13.html'));
+});
+
+app.get('/form14', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form14.html'));
+});
+
+app.get('/form15', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form15.html'));
+});
+
+app.get('/form16', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form16.html'));
+});
+
+app.get('/form17', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form17.html'));
+});
+
+app.get('/form18', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form18.html'));
+});
+
+app.get('/form19', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form19.html'));
+});
+
+app.get('/form20', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form20.html'));
+});
+
+app.get('/form21', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form21.html'));
+});
+
+app.get('/form22', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form22.html'));
+});
+
+app.get('/form23', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form23.html'));
+});
+
+app.get('/form24', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form24.html'));
+});
+
+app.get('/form25', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form25.html'));
+});
+
+app.get('/form26', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form26.html'));
+});
+
+app.get('/form27', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form27.html'));
+});
+
+app.get('/form28', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form28.html'));
+});
+
+app.get('/form29', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form29.html'));
+});
+
+app.get('/form30', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form30.html'));
 });
 
 app.listen(port, () => {
