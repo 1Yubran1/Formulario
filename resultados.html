@@ -26,41 +26,72 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         fetch('http://localhost:3000/results')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Error fetching results: ${response.statusText}`);
+                }
+                return response.json();
+            })
             .then(results => {
+                console.log('Results fetched:', results); // Log para verificar resultados
+
                 const resultsBody = document.getElementById('results-body');
 
-                // Array para guardar los puntos totales de cada equipo
-                const totalPoints = Array(60).fill(0);
+                // Obtener nombres de equipos desde teams.json
+                fetch('teams.json')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Error fetching teams.json: ${response.statusText}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        const teams = data.teams;
+                        console.log('Teams fetched:', teams); // Log para verificar equipos
 
-                // Sumar los puntos de cada formulario para cada equipo
-                Object.keys(results).forEach(formKey => {
-                    for (let i = 0; i < 60; i++) {
-                        totalPoints[i] += results[formKey][`team${i + 1}`] || 0;
-                    }
-                });
+                        // Array para guardar los puntos totales de cada equipo
+                        const totalPoints = Array(60).fill(0);
 
-                // Crear y añadir las barras de progreso para cada equipo
-                totalPoints.forEach((points, i) => {
-                    const progressClass = points >= 300 ? 'bg-success' :
-                                          points >= 200 ? 'bg-info text-dark' :
-                                          points >= 100 ? 'bg-warning text-dark' :
-                                          'bg-danger';
+                        // Sumar los puntos de cada formulario para cada equipo
+                        Object.keys(results).forEach(formKey => {
+                            for (let i = 0; i < 60; i++) {
+                                const teamKey = `teamPoints${i + 1}`;
+                                const points = results[formKey][teamKey] || 0;
+                                totalPoints[i] += points;
+                                console.log(`Sumando puntos para ${teams[i]}: ${points} (Total: ${totalPoints[i]})`); // Log de depuración
+                            }
+                        });
 
-                    const progressBar = document.createElement('div');
-                    progressBar.className = 'progress';
-                    progressBar.setAttribute('role', 'progressbar');
-                    progressBar.setAttribute('aria-valuenow', points);
-                    progressBar.setAttribute('aria-valuemin', '0');
-                    progressBar.setAttribute('aria-valuemax', '300');  // Máximo total de puntos posibles
-                    progressBar.innerHTML = `
-                        <div class="progress-bar ${progressClass}" style="width: ${(points / 300) * 100}%">
-                            Equipo ${i + 1}: ${points} puntos
-                        </div>
-                    `;
+                        console.log('Total points:', totalPoints); // Log para verificar puntos totales
 
-                    resultsBody.appendChild(progressBar);
-                });
+                        // Crear y añadir las barras de progreso para cada equipo
+                        totalPoints.forEach((points, i) => {
+                            const progressClass = points >= 300 ? 'bg-success' :
+                                                  points >= 200 ? 'bg-info text-dark' :
+                                                  points >= 100 ? 'bg-warning text-dark' :
+                                                  'bg-danger';
+
+                            const progressBar = document.createElement('div');
+                            progressBar.className = 'progress';
+                            progressBar.setAttribute('role', 'progressbar');
+                            progressBar.setAttribute('aria-valuenow', points);
+                            progressBar.setAttribute('aria-valuemin', '0');
+                            progressBar.setAttribute('aria-valuemax', '300');  // Máximo total de puntos posibles
+                            progressBar.innerHTML = `
+                                <div class="progress-bar ${progressClass}" style="width: ${(points / 300) * 100}%">
+                                    ${teams[i]}: ${points} puntos
+                                </div>
+                            `;
+
+                            resultsBody.appendChild(progressBar);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching teams.json:', error);
+                    });
+            })
+            .catch(error => {
+                console.error('Error fetching results:', error);
             });
     });
 </script>
