@@ -37,7 +37,7 @@
                         formGroup.className = 'mb-3';
                         formGroup.innerHTML = `
                             <label for="teamPoints${index + 1}" class="form-label">${team}</label>
-                            <select class="form-select" id="teamPoints${index + 1}" name="teamPoints${index + 1}">
+                            <select class="form-select" id="teamPoints${index + 1}" name="teamPoints${index + 1}" onchange="changeSelectStyle(${index + 1})">
                                 <option value="0">0 puntos</option>
                                 <option value="1">1 punto</option>
                                 <option value="2">2 puntos</option>
@@ -50,22 +50,32 @@
                                 <option value="9">9 puntos</option>
                                 <option value="10">10 puntos</option>
                             </select>
+                            <div class="valid-feedback" id="validFeedback${index + 1}" style="display:none;">Puntaje guardado</div>
+                            <div class="invalid-feedback" id="invalidFeedback${index + 1}" style="display:none;">Something went wrong, please try again.</div>
                         `;
                         form22Entries.appendChild(formGroup);
-                    });
-    
-                    // Asignar evento click al botón "Enviar" después de cargar los datos
-                    const submitBtn = document.getElementById('submitBtn');
-                    submitBtn.addEventListener('click', function() {
-                        const formData = collectFormData(teams.length); // Utilizar la longitud de teams
-                        const endpoint = 'http://localhost:3000/submit/form22'; // Cambiar la URL según tu configuración
-                        sendData(endpoint, formData);
                     });
                 })
                 .catch(error => {
                     console.error('Error fetching teams.json:', error);
                 });
+    
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.addEventListener('click', function() {
+                const formData = collectFormData(document.querySelectorAll('[id^="teamPoints"]').length);
+                const endpoint = 'http://localhost:3000/submit/form22'; // Cambiar la URL según tu configuración
+                sendData(endpoint, formData);
+            });
         });
+    
+        function changeSelectStyle(index) {
+            const selectElement = document.getElementById(`teamPoints${index}`);
+            if (selectElement.value !== "0") {
+                selectElement.classList.add('alert', 'alert-success');
+            } else {
+                selectElement.classList.remove('alert', 'alert-success');
+            }
+        }
     
         function collectFormData(teamCount) {
             const formData = {};
@@ -85,11 +95,35 @@
                 body: JSON.stringify(data)
             }).then(response => response.text())
               .then(data => {
-                  alert(data);
+                  showValidationMessages(true);
               })
               .catch(error => {
                   console.error('Error:', error);
+                  showValidationMessages(false);
               });
+        }
+    
+        function showValidationMessages(isValid) {
+            const teamCount = document.querySelectorAll('[id^="teamPoints"]').length;
+            for (let i = 1; i <= teamCount; i++) {
+                const validFeedback = document.getElementById(`validFeedback${i}`);
+                const invalidFeedback = document.getElementById(`invalidFeedback${i}`);
+                if (isValid) {
+                    validFeedback.style.display = 'block';
+                    invalidFeedback.style.display = 'none';
+                } else {
+                    validFeedback.style.display = 'none';
+                    invalidFeedback.style.display = 'block';
+                }
+            }
+            setTimeout(() => {
+                for (let i = 1; i <= teamCount; i++) {
+                    const validFeedback = document.getElementById(`validFeedback${i}`);
+                    const invalidFeedback = document.getElementById(`invalidFeedback${i}`);
+                    validFeedback.style.display = 'none';
+                    invalidFeedback.style.display = 'none';
+                }
+            }, 10000);
         }
     </script>
 </body>

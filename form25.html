@@ -37,6 +37,110 @@
                         formGroup.className = 'mb-3';
                         formGroup.innerHTML = `
                             <label for="teamPoints${index + 1}" class="form-label">${team}</label>
+                            <select class="form-select" id="teamPoints${index + 1}" name="teamPoints${index + 1}" onchange="changeSelectStyle(${index + 1})">
+                                <option value="0">0 puntos</option>
+                                <option value="1">1 punto</option>
+                                <option value="2">2 puntos</option>
+                                <option value="3">3 puntos</option>
+                                <option value="4">4 puntos</option>
+                                <option value="5">5 puntos</option>
+                                <option value="6">6 puntos</option>
+                                <option value="7">7 puntos</option>
+                                <option value="8">8 puntos</option>
+                                <option value="9">9 puntos</option>
+                                <option value="10">10 puntos</option>
+                            </select>
+                            <div class="valid-feedback" id="validFeedback${index + 1}" style="display:none;">Puntaje guardado</div>
+                            <div class="invalid-feedback" id="invalidFeedback${index + 1}" style="display:none;">Something went wrong, please try again.</div>
+                        `;
+                        form25Entries.appendChild(formGroup);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching teams.json:', error);
+                });
+    
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.addEventListener('click', function() {
+                const formData = collectFormData(document.querySelectorAll('[id^="teamPoints"]').length);
+                const endpoint = 'http://localhost:3000/submit/form25'; // Cambiar la URL según tu configuración
+                sendData(endpoint, formData);
+            });
+        });
+    
+        function changeSelectStyle(index) {
+            const selectElement = document.getElementById(`teamPoints${index}`);
+            if (selectElement.value !== "0") {
+                selectElement.classList.add('alert', 'alert-success');
+            } else {
+                selectElement.classList.remove('alert', 'alert-success');
+            }
+        }
+    
+        function collectFormData(teamCount) {
+            const formData = {};
+            for (let i = 1; i <= teamCount; i++) {
+                const teamPoints = document.getElementById(`teamPoints${i}`).value.trim();
+                formData[`teamPoints${i}`] = parseInt(teamPoints);
+            }
+            return formData;
+        }
+    
+        function sendData(endpoint, data) {
+            fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            }).then(response => response.text())
+              .then(data => {
+                  showValidationMessages(true);
+              })
+              .catch(error => {
+                  console.error('Error:', error);
+                  showValidationMessages(false);
+              });
+        }
+    
+        function showValidationMessages(isValid) {
+            const teamCount = document.querySelectorAll('[id^="teamPoints"]').length;
+            for (let i = 1; i <= teamCount; i++) {
+                const validFeedback = document.getElementById(`validFeedback${i}`);
+                const invalidFeedback = document.getElementById(`invalidFeedback${i}`);
+                if (isValid) {
+                    validFeedback.style.display = 'block';
+                    invalidFeedback.style.display = 'none';
+                } else {
+                    validFeedback.style.display = 'none';
+                    invalidFeedback.style.display = 'block';
+                }
+            }
+            setTimeout(() => {
+                for (let i = 1; i <= teamCount; i++) {
+                    const validFeedback = document.getElementById(`validFeedback${i}`);
+                    const invalidFeedback = document.getElementById(`invalidFeedback${i}`);
+                    validFeedback.style.display = 'none';
+                    invalidFeedback.style.display = 'none';
+                }
+            }, 10000);
+        }
+    </script><script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form25Entries = document.getElementById('form25-entries');
+    
+            // Fetch para obtener los equipos desde el archivo JSON
+            fetch('teams.json')
+                .then(response => response.json())
+                .then(data => {
+                    const teams = data.teams;
+    
+                    // Iterar sobre los nombres de los equipos y crear las entradas en el formulario
+                    teams.forEach((team, index) => {
+                        const formGroup = document.createElement('div');
+                        formGroup.className = 'mb-3';
+                        formGroup.innerHTML = `
+                            <label for="teamPoints${index + 1}" class="form-label">${team}</label>
                             <select class="form-select" id="teamPoints${index + 1}" name="teamPoints${index + 1}">
                                 <option value="0">0 puntos</option>
                                 <option value="1">1 punto</option>
