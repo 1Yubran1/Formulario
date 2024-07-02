@@ -1,13 +1,21 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const path = require('path');
 const app = express();
-const port = 5500;
+const port = 5501;
 
 app.use(cors()); // Permitir CORS para todas las rutas
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// Servir archivos estáticos desde el directorio actual
+app.use(express.static(path.join(__dirname)));
+
+// Ruta para servir el archivo index.html
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
 let results = {
     form1: {},
     form2: {},
@@ -225,9 +233,6 @@ app.post('/submit/form30', (req, res) => {
 app.get('/results', (req, res) => {
     res.json(results);
 });
-
-// Servir archivos estáticos (opcional, si necesitas servir archivos HTML)
-app.use(express.static('public'));
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
