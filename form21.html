@@ -63,7 +63,7 @@
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.addEventListener('click', function() {
                 const formData = collectFormData(document.querySelectorAll('[id^="teamPoints"]').length);
-                const endpoint = 'http://localhost:3000/submit/form21'; // Cambiar la URL según tu configuración
+                const endpoint = 'http://localhost:5500/submit/form21'; // Cambiar la URL según tu configuración
                 sendData(endpoint, formData);
             });
         });
@@ -124,76 +124,6 @@
                     invalidFeedback.style.display = 'none';
                 }
             }, 10000);
-        }
-    </script><script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const form21Entries = document.getElementById('form21-entries');
-    
-            // Fetch para obtener los equipos desde el archivo JSON
-            fetch('teams.json')
-                .then(response => response.json())
-                .then(data => {
-                    const teams = data.teams;
-    
-                    // Iterar sobre los nombres de los equipos y crear las entradas en el formulario
-                    teams.forEach((team, index) => {
-                        const formGroup = document.createElement('div');
-                        formGroup.className = 'mb-3';
-                        formGroup.innerHTML = `
-                            <label for="teamPoints${index + 1}" class="form-label">${team}</label>
-                            <select class="form-select" id="teamPoints${index + 1}" name="teamPoints${index + 1}">
-                                <option value="0">0 puntos</option>
-                                <option value="1">1 punto</option>
-                                <option value="2">2 puntos</option>
-                                <option value="3">3 puntos</option>
-                                <option value="4">4 puntos</option>
-                                <option value="5">5 puntos</option>
-                                <option value="6">6 puntos</option>
-                                <option value="7">7 puntos</option>
-                                <option value="8">8 puntos</option>
-                                <option value="9">9 puntos</option>
-                                <option value="10">10 puntos</option>
-                            </select>
-                        `;
-                        form21Entries.appendChild(formGroup);
-                    });
-    
-                    // Asignar evento click al botón "Enviar" después de cargar los datos
-                    const submitBtn = document.getElementById('submitBtn');
-                    submitBtn.addEventListener('click', function() {
-                        const formData = collectFormData(teams.length); // Utilizar la longitud de teams
-                        const endpoint = 'http://localhost:3000/submit/form21'; // Cambiar la URL según tu configuración
-                        sendData(endpoint, formData);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching teams.json:', error);
-                });
-        });
-    
-        function collectFormData(teamCount) {
-            const formData = {};
-            for (let i = 1; i <= teamCount; i++) {
-                const teamPoints = document.getElementById(`teamPoints${i}`).value.trim();
-                formData[`teamPoints${i}`] = parseInt(teamPoints);
-            }
-            return formData;
-        }
-    
-        function sendData(endpoint, data) {
-            fetch(endpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            }).then(response => response.text())
-              .then(data => {
-                  alert(data);
-              })
-              .catch(error => {
-                  console.error('Error:', error);
-              });
         }
     </script>
 </body>

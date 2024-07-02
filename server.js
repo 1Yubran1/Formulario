@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const app = express();
-const port = 3000;
+const port = 5500;
 
 app.use(cors()); // Permitir CORS para todas las rutas
 app.use(bodyParser.json());

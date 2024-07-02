@@ -63,7 +63,7 @@
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.addEventListener('click', function() {
                 const formData = collectFormData(document.querySelectorAll('[id^="teamPoints"]').length);
-                const endpoint = 'http://localhost:3000/submit/form8'; // Cambiar la URL según tu configuración
+                const endpoint = 'http://localhost:5500/submit/form8'; // Cambiar la URL según tu configuración
                 sendData(endpoint, formData);
             });
         });
