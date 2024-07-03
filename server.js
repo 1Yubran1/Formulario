@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
 const app = express();
-const port = 5501;
+const port = process.env.PORT || 5501; // Utiliza el puerto proporcionado por Heroku o 5501 para desarrollo local
 
 app.use(cors()); // Permitir CORS para todas las rutas
 app.use(bodyParser.json());
@@ -16,6 +16,7 @@ app.use(express.static(path.join(__dirname)));
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
+
 let results = {
     form1: {},
     form2: {},
