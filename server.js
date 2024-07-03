@@ -48,6 +48,7 @@ let results = {
     form28: {},
     form29: {},
     form30: {},
+    form31: {}
 };
 
 // Endpoint para recibir los resultados del formulario 1 (POST)
@@ -228,6 +229,12 @@ app.post('/submit/form29', (req, res) => {
 app.post('/submit/form30', (req, res) => {
     results.form30 = req.body;
     res.send('Valores de la estación 17.1 recibido');
+});
+
+// Endpoint para recibir los resultados del formulario 30 (POST)
+app.post('/submit/form31', (req, res) => {
+    results.form31 = req.body;
+    res.send('Valores de la estación recibido');
 });
 
 // Endpoint para obtener los resultados (GET)
