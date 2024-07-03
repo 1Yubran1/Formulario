@@ -50,11 +50,11 @@
                         console.log('Teams fetched:', teams); // Log para verificar equipos
 
                         // Array para guardar los puntos totales de cada equipo
-                        const totalPoints = Array(60).fill(0);
+                        const totalPoints = Array(teams.length).fill(0);
 
                         // Sumar los puntos de cada formulario para cada equipo
                         Object.keys(results).forEach(formKey => {
-                            for (let i = 0; i < 60; i++) {
+                            for (let i = 0; i < teams.length; i++) {
                                 const teamKey = `teamPoints${i + 1}`;
                                 const points = results[formKey][teamKey] || 0;
                                 totalPoints[i] += points;
