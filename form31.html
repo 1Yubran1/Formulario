@@ -38,6 +38,7 @@
                         formGroup.innerHTML = `
                             <label for="teamPoints${index + 1}" class="form-label">${team}</label>
                             <select class="form-select" id="teamPoints${index + 1}" name="teamPoints${index + 1}" onchange="changeSelectStyle(${index + 1})">
+                                <option value="0">0 puntos</option>
                                 <option value="-10">-10 puntos</option>
                                 <option value="-9">-9 puntos</option>
                                 <option value="-8">-8 puntos</option>
@@ -48,7 +49,6 @@
                                 <option value="-3">-3 puntos</option>
                                 <option value="-2">-2 puntos</option>
                                 <option value="-1">-1 punto</option>
-                                <option value="0">0 puntos</option>
                                 <option value="1">1 punto</option>
                                 <option value="2">2 puntos</option>
                                 <option value="3">3 puntos</option>
