@@ -63,7 +63,7 @@
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.addEventListener('click', function() {
                 const formData = collectFormData(document.querySelectorAll('[id^="teamPoints"]').length);
-                const endpoint = 'http://localhost:5501/submit/form7'; // Cambiar la URL según tu configuración
+                const endpoint = 'https://form-urbanicentro-44f3ac5aea9b.herokuapp.com/submit/form7'; // Cambiar la URL según tu configuración
                 sendData(endpoint, formData);
             });
         });
