@@ -48,7 +48,7 @@ let results = {
     form28: {},
     form29: {},
     form30: {},
-    form31: {}
+    form31: {},
 };
 
 // Endpoint para recibir los resultados del formulario 1 (POST)
