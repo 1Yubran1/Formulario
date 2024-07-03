@@ -96,6 +96,7 @@
         }).then(response => response.text())
           .then(data => {
               showValidationMessages(true);
+              clearFormAfterTimeout();
           })
           .catch(error => {
               console.error('Error:', error);
@@ -123,6 +124,17 @@
                 validFeedback.style.display = 'none';
                 invalidFeedback.style.display = 'none';
             }
+        }, 10000);
+    }
+
+    function clearFormAfterTimeout() {
+        setTimeout(() => {
+            const form = document.getElementById('form1');
+            form.reset();
+            const selects = form.querySelectorAll('select');
+            selects.forEach(select => {
+                select.classList.remove('alert', 'alert-success');
+            });
         }, 10000);
     }
 </script>
