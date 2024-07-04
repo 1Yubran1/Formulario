@@ -75,7 +75,7 @@
 
                             // Crear y añadir las barras de progreso para cada equipo
                             teamPointsArray.forEach(({ team, points }) => {
-                                const progressClass = points >= 310 ? 'bg-success' :
+                                const progressClass = points >= 300 ? 'bg-success' :
                                                       points >= 200 ? 'bg-info text-dark' :
                                                       points >= 100 ? 'bg-warning text-dark' :
                                                       'bg-danger';
@@ -87,7 +87,7 @@
                                 progressBar.setAttribute('aria-valuemin', '0');
                                 progressBar.setAttribute('aria-valuemax', '310');  // Máximo total de puntos posibles
                                 progressBar.innerHTML = `
-                                    <div class="progress-bar ${progressClass}" style="width: ${(points / 310) * 100}%">
+                                    <div class="progress-bar ${progressClass}" style="width: ${(points / 300) * 100}%">
                                         ${team}: ${points} puntos
                                     </div>
                                 `;
