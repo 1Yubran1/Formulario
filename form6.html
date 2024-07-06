@@ -29,13 +29,13 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const form6Entries = document.getElementById('form6-entries');
-    
+        
             // Fetch para obtener los equipos desde el archivo JSON
             fetch('teams.json')
                 .then(response => response.json())
                 .then(data => {
                     const teams = data.teams;
-    
+        
                     // Iterar sobre los nombres de los equipos y crear las entradas en el formulario
                     teams.forEach((team, index) => {
                         const formGroup = document.createElement('div');
@@ -60,11 +60,30 @@
                         `;
                         form6Entries.appendChild(formGroup);
                     });
+        
+                    // Fetch para obtener los datos ya guardados
+                    fetch('https://form-urbanicentro-44f3ac5aea9b.herokuapp.com/get/form6') // Cambiar la URL según tu configuración
+                        .then(response => response.json())
+                        .then(savedData => {
+                            for (let key in savedData) {
+                                if (savedData.hasOwnProperty(key)) {
+                                    const selectElement = document.getElementById(key);
+                                    if (selectElement) {
+                                        selectElement.value = savedData[key];
+                                        changeSelectStyle(key.replace('teamPoints', ''));
+                                    }
+                                }
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching saved data:', error);
+                        });
+        
                 })
                 .catch(error => {
                     console.error('Error fetching teams.json:', error);
                 });
-    
+        
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.addEventListener('click', function() {
                 const teamCount = document.querySelectorAll('[id^="teamPoints"]').length;
@@ -77,7 +96,7 @@
                 }
             });
         });
-    
+        
         function changeSelectStyle(index) {
             const selectElement = document.getElementById(`teamPoints${index}`);
             if (selectElement.value !== "0") {
@@ -86,7 +105,7 @@
                 selectElement.classList.remove('alert', 'alert-success');
             }
         }
-    
+        
         function validateFormData(teamCount) {
             for (let i = 1; i <= teamCount; i++) {
                 const teamPoints = document.getElementById(`teamPoints${i}`).value.trim();
@@ -97,7 +116,7 @@
             }
             return true;
         }
-    
+        
         function collectFormData(teamCount) {
             const formData = {};
             for (let i = 1; i <= teamCount; i++) {
@@ -106,7 +125,7 @@
             }
             return formData;
         }
-    
+        
         function sendData(endpoint, data) {
             fetch(endpoint, {
                 method: 'POST',
@@ -117,14 +136,13 @@
             }).then(response => response.text())
               .then(data => {
                   showValidationMessages(true);
-                  clearFormAfterTimeout();
               })
               .catch(error => {
                   console.error('Error:', error);
                   showValidationMessages(false);
               });
         }
-    
+        
         function showValidationMessages(isValid) {
             const teamCount = document.querySelectorAll('[id^="teamPoints"]').length;
             for (let i = 1; i <= teamCount; i++) {
@@ -145,20 +163,6 @@
                     validFeedback.style.display = 'none';
                     invalidFeedback.style.display = 'none';
                 }
-                if (isValid) {
-                    window.location.href = 'index.html'; // Redirigir al índice después de mostrar el mensaje
-                }
-            }, 4000);
-        }
-    
-        function clearFormAfterTimeout() {
-            setTimeout(() => {
-                const form = document.getElementById('form6');
-                form.reset();
-                const selects = form.querySelectorAll('select');
-                selects.forEach(select => {
-                    select.classList.remove('alert', 'alert-success');
-                });
             }, 4000);
         }
     </script>
