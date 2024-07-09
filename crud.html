@@ -83,7 +83,9 @@
                     addTeamToDOM(team, teamList.children.length + 1);
                     showAlert('Equipo agregado exitosamente!', 'success', alertContainer);
                     teamNameInput.value = '';
-                    window.location.href = 'crud.html';
+                    setTimeout(() => {
+                        window.location.href = 'crud.html';
+                    }, 0); // Redireccionamiento inmediato
                 });
             }
         });
@@ -97,7 +99,9 @@
                 })
                 .then(() => {
                     showAlert('Equipo eliminado exitosamente!', 'danger', alertContainer);
-                    window.location.href = 'crud.html';
+                    setTimeout(() => {
+                        window.location.href = 'crud.html';
+                    }, 0); // Redireccionamiento inmediato
                 });
             }
 
@@ -131,7 +135,9 @@
                     showAlert('Equipo actualizado exitosamente!', 'success', editAlertContainer);
                     const editTeamModal = bootstrap.Modal.getInstance(document.getElementById('editTeamModal'));
                     editTeamModal.hide();
-                    window.location.href = 'crud.html';
+                    setTimeout(() => {
+                        window.location.href = 'crud.html';
+                    }, 0); // Redireccionamiento inmediato
                 });
             }
         });
