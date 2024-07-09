@@ -84,7 +84,7 @@
                     showAlert('Equipo agregado exitosamente!', 'success', alertContainer);
                     teamNameInput.value = '';
                     setTimeout(() => {
-                        window.location.href = 'crud.html';
+                        location.reload();
                     }, 0); // Redireccionamiento inmediato
                 });
             }
@@ -100,7 +100,7 @@
                 .then(() => {
                     showAlert('Equipo eliminado exitosamente!', 'danger', alertContainer);
                     setTimeout(() => {
-                        window.location.href = 'crud.html';
+                        location.reload();
                     }, 0); // Redireccionamiento inmediato
                 });
             }
@@ -136,7 +136,7 @@
                     const editTeamModal = bootstrap.Modal.getInstance(document.getElementById('editTeamModal'));
                     editTeamModal.hide();
                     setTimeout(() => {
-                        window.location.href = 'crud.html';
+                        location.reload();
                     }, 0); // Redireccionamiento inmediato
                 });
             }
