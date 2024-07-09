@@ -56,7 +56,7 @@
                     const formGroup = document.createElement('div');
                     formGroup.className = 'mb-3';
                     formGroup.innerHTML = `
-                        <label for="teamPoints${index + 1}" class="form-label">${index + 1}. ${team}</label>
+                        <label for="teamPoints${index + 1}" class="form-label">${index + 1}. ${team.name}</label>
                         <select class="form-select" id="teamPoints${index + 1}" name="teamPoints${index + 1}" onchange="changeSelectStyle(${index + 1})">
                             <option value="0">0 puntos</option>
                             <option value="1">1 punto</option>
