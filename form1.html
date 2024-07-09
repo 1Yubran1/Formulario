@@ -33,10 +33,10 @@
         const alertContainer = document.getElementById('alertContainer');
 
         // Fetch para obtener los equipos desde el archivo JSON
-        fetch('/teams')
+        fetch('teams.json')
             .then(response => response.json())
             .then(data => {
-                data.teams.forEach((team, index) => addTeamToDOM(team, index + 1));
+                const teams = data.teams;
 
                 // Iterar sobre los nombres de los equipos y crear las entradas en el formulario
                 teams.forEach((team, index) => {
