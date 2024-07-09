@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,8 +11,6 @@
     <div class="container">
         <h1 class="my-4">CRUD de Equipos</h1>
 
-        <div id="alertContainer"></div>
-
         <form id="teamForm" class="mb-4">
             <div class="form-group">
                 <label for="teamName">Nombre del equipo</label>
@@ -22,9 +20,18 @@
         </form>
 
         <h2>Lista de Equipos</h2>
-        <ul id="teamList" class="list-group">
-            <!-- Lista de equipos se mostrará aquí -->
-        </ul>
+        <table id="teamTable" class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Nombre del Equipo</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Filas de equipos se mostrarán aquí -->
+            </tbody>
+        </table>
     </div>
 
     <!-- Modal para editar equipo -->
@@ -41,7 +48,6 @@
                             <label for="editTeamName" class="form-label">Nombre del equipo</label>
                             <input type="text" class="form-control" id="editTeamName" required>
                         </div>
-                        <div id="editAlertContainer"></div>
                         <button type="submit" class="btn btn-primary">Guardar cambios</button>
                     </form>
                 </div>
@@ -49,136 +55,104 @@
         </div>
     </div>
 
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const teamForm = document.getElementById('teamForm');
-        const teamNameInput = document.getElementById('teamName');
-        const teamList = document.getElementById('teamList');
-        const alertContainer = document.getElementById('alertContainer');
-        const editAlertContainer = document.getElementById('editAlertContainer');
-        let editTeamId = null;
-
-        // Fetch para obtener los equipos guardados
-        fetch('/teams')
-            .then(response => response.json())
-            .then(data => {
-                data.teams.forEach((team, index) => addTeamToDOM(team, index + 1));
-            });
-
-        teamForm.addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            const teamName = teamNameInput.value.trim();
-            if (teamName) {
-                // Crear nuevo equipo
-                fetch('/teams', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ name: teamName })
-                })
-                .then(response => response.json())
-                .then(team => {
-                    addTeamToDOM(team, teamList.children.length + 1);
-                    showAlert('Equipo agregado exitosamente!', 'success', alertContainer);
-                    teamNameInput.value = '';
-                    setTimeout(() => {
-                        window.location.href = 'crud.html';
-                    }, 0); // Redireccionamiento inmediato
-                })
-                .catch(error => {
-                    console.error('Error al agregar equipo:', error);
-                });
-            }
-        });
-
-        teamList.addEventListener('click', function(event) {
-            if (event.target.classList.contains('delete-btn')) {
-                const teamId = event.target.dataset.id;
-                // Borrar equipo
-                fetch(`/teams/${teamId}`, {
-                    method: 'DELETE'
-                })
-                .then(() => {
-                    showAlert('Equipo eliminado exitosamente!', 'danger', alertContainer);
-                    setTimeout(() => {
-                        window.location.href = 'crud.html';
-                    }, 0); // Redireccionamiento inmediato
-                })
-                .catch(error => {
-                    console.error('Error al eliminar equipo:', error);
-                });
-            }
-
-            if (event.target.classList.contains('edit-btn')) {
-                const teamId = event.target.dataset.id;
-                const teamName = event.target.closest('li').querySelector('.team-name').textContent;
-                editTeamId = teamId;
-                document.getElementById('editTeamName').value = teamName;
-                const editTeamModal = new bootstrap.Modal(document.getElementById('editTeamModal'));
-                editTeamModal.show();
-            }
-        });
-
-        document.getElementById('editTeamForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            const teamName = document.getElementById('editTeamName').value.trim();
-            if (teamName && editTeamId) {
-                // Editar equipo
-                fetch(`/teams/${editTeamId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ name: teamName })
-                })
-                .then(response => response.json())
-                .then(updatedTeam => {
-                    const teamElement = document.getElementById(`team-${updatedTeam.id}`);
-                    teamElement.querySelector('.team-name').textContent = updatedTeam.name;
-                    showAlert('Equipo actualizado exitosamente!', 'success', editAlertContainer);
-                    const editTeamModal = bootstrap.Modal.getInstance(document.getElementById('editTeamModal'));
-                    editTeamModal.hide();
-                    setTimeout(() => {
-                        window.location.href = 'crud.html';
-                    }, 0); // Redireccionamiento inmediato
-                })
-                .catch(error => {
-                    console.error('Error al editar equipo:', error);
-                });
-            }
-        });
-
-        function addTeamToDOM(team, index) {
-            const teamElement = document.createElement('li');
-            teamElement.id = `team-${team.id}`;
-            teamElement.className = 'list-group-item d-flex justify-content-between align-items-center';
-            teamElement.innerHTML = `
-                <span class="team-name">${index}. ${team.name}</span>
-                <div>
-                    <button class="btn btn-secondary btn-sm edit-btn" data-id="${team.id}">Editar</button>
-                    <button class="btn btn-danger btn-sm delete-btn" data-id="${team.id}">Borrar</button>
-                </div>
-            `;
-            teamList.appendChild(teamElement);
-        }
-
-        function showAlert(message, type, container) {
-            const alert = document.createElement('div');
-            alert.className = `alert alert-${type} alert-dismissible fade show`;
-            alert.role = 'alert';
-            alert.innerHTML = `
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            `;
-            container.appendChild(alert);
-        }
-    });
-    </script>
-
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const teamForm = document.getElementById('teamForm');
+            const teamNameInput = document.getElementById('teamName');
+            const teamTable = document.getElementById('teamTable');
+            let editTeamId = null;
+
+            // Función para cargar y mostrar los equipos
+            function loadTeams() {
+                fetch('/teams')
+                    .then(response => response.json())
+                    .then(data => {
+                        teamTable.innerHTML = ''; // Limpiar la tabla antes de actualizarla
+                        data.teams.forEach((team, index) => {
+                            const row = `
+                                <tr id="team-${team.id}">
+                                    <th scope="row">${index + 1}</th>
+                                    <td>${team.name}</td>
+                                    <td>
+                                        <button class="btn btn-secondary btn-sm edit-btn" data-id="${team.id}">Editar</button>
+                                        <button class="btn btn-danger btn-sm delete-btn" data-id="${team.id}">Borrar</button>
+                                    </td>
+                                </tr>
+                            `;
+                            teamTable.innerHTML += row;
+                        });
+                    });
+            }
+
+            // Cargar equipos al cargar la página
+            loadTeams();
+
+            // Agregar equipo
+            teamForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const teamName = teamNameInput.value.trim();
+                if (teamName) {
+                    fetch('/teams', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ name: teamName })
+                    })
+                    .then(() => {
+                        teamNameInput.value = '';
+                        loadTeams(); // Recargar la tabla de equipos
+                    });
+                }
+            });
+
+            // Editar equipo (abrir modal)
+            teamTable.addEventListener('click', function(event) {
+                if (event.target.classList.contains('edit-btn')) {
+                    const teamId = event.target.dataset.id;
+                    const teamName = event.target.closest('tr').querySelector('td:nth-child(2)').textContent;
+                    editTeamId = teamId;
+                    document.getElementById('editTeamName').value = teamName;
+                    const editTeamModal = new bootstrap.Modal(document.getElementById('editTeamModal'));
+                    editTeamModal.show();
+                }
+            });
+
+            // Guardar cambios al editar equipo
+            document.getElementById('editTeamForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const teamName = document.getElementById('editTeamName').value.trim();
+                if (teamName && editTeamId) {
+                    fetch(`/teams/${editTeamId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ name: teamName })
+                    })
+                    .then(() => {
+                        const editTeamModal = bootstrap.Modal.getInstance(document.getElementById('editTeamModal'));
+                        editTeamModal.hide();
+                        loadTeams(); // Recargar la tabla de equipos
+                    });
+                }
+            });
+
+            // Eliminar equipo
+            teamTable.addEventListener('click', function(event) {
+                if (event.target.classList.contains('delete-btn')) {
+                    const teamId = event.target.dataset.id;
+                    fetch(`/teams/${teamId}`, {
+                        method: 'DELETE'
+                    })
+                    .then(() => {
+                        loadTeams(); // Recargar la tabla de equipos
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>
