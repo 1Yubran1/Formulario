@@ -11,9 +11,10 @@
 <div class="container">
     <h1 class="mt-5">Estación 1.1: IMJUDEC</h1>
     <h2 class="mt-5">Objetivo 1: Poner fin a la pobreza</h2>
-        <div class="col-sm-1">
-            <img src="img/estacion1.png" class="img-fluid" alt="...">
-        </div>
+    <div class="col-sm-1">
+        <img src="img/estacion1.png" class="img-fluid" alt="...">
+    </div>
+    <div id="alertContainer"></div>
     <form id="form1" class="mt-3">
         <div id="form1-entries">
             <!-- Aquí se generarán las entradas de los equipos -->
@@ -29,19 +30,20 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const form1Entries = document.getElementById('form1-entries');
-    
+        const alertContainer = document.getElementById('alertContainer');
+
         // Fetch para obtener los equipos desde el archivo JSON
         fetch('teams.json')
             .then(response => response.json())
             .then(data => {
                 const teams = data.teams;
-    
+
                 // Iterar sobre los nombres de los equipos y crear las entradas en el formulario
                 teams.forEach((team, index) => {
                     const formGroup = document.createElement('div');
                     formGroup.className = 'mb-3';
                     formGroup.innerHTML = `
-                        <label for="teamPoints${index + 1}" class="form-label">${team}</label>
+                        <label for="teamPoints${index + 1}" class="form-label">${index + 1}. ${team}</label>
                         <select class="form-select" id="teamPoints${index + 1}" name="teamPoints${index + 1}" onchange="changeSelectStyle(${index + 1})">
                             <option value="0">0 puntos</option>
                             <option value="1">1 punto</option>
@@ -60,7 +62,7 @@
                     `;
                     form1Entries.appendChild(formGroup);
                 });
-    
+
                 // Fetch para obtener los datos ya guardados
                 fetch('https://form-urbanicentro-44f3ac5aea9b.herokuapp.com/get/form1') // Cambiar la URL según tu configuración
                     .then(response => response.json())
@@ -78,12 +80,12 @@
                     .catch(error => {
                         console.error('Error fetching saved data:', error);
                     });
-    
+
             })
             .catch(error => {
                 console.error('Error fetching teams.json:', error);
             });
-    
+
         const submitBtn = document.getElementById('submitBtn');
         submitBtn.addEventListener('click', function() {
             const teamCount = document.querySelectorAll('[id^="teamPoints"]').length;
@@ -96,7 +98,7 @@
             }
         });
     });
-    
+
     function changeSelectStyle(index) {
         const selectElement = document.getElementById(`teamPoints${index}`);
         if (selectElement.value !== "0") {
@@ -105,7 +107,7 @@
             selectElement.classList.remove('alert', 'alert-success');
         }
     }
-    
+
     function validateFormData(teamCount) {
         for (let i = 1; i <= teamCount; i++) {
             const teamPoints = document.getElementById(`teamPoints${i}`).value.trim();
@@ -116,7 +118,7 @@
         }
         return true;
     }
-    
+
     function collectFormData(teamCount) {
         const formData = {};
         for (let i = 1; i <= teamCount; i++) {
@@ -125,7 +127,7 @@
         }
         return formData;
     }
-    
+
     function sendData(endpoint, data) {
         fetch(endpoint, {
             method: 'POST',
@@ -135,14 +137,26 @@
             body: JSON.stringify(data)
         }).then(response => response.text())
           .then(data => {
-              showValidationMessages(true);
+              showAlert('Puntajes guardados exitosamente!', 'success', true);
           })
           .catch(error => {
               console.error('Error:', error);
-              showValidationMessages(false);
+              showAlert('Error al guardar puntajes. Intente de nuevo.', 'danger');
           });
     }
-    
+
+    function showAlert(message, type, reload = false) {
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type} alert-dismissible fade show`;
+        alert.role = 'alert';
+        alert.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn btn-primary" onclick="window.location.reload()">OK</button>
+        `;
+        alertContainer.appendChild(alert);
+    }
+
     function showValidationMessages(isValid) {
         const teamCount = document.querySelectorAll('[id^="teamPoints"]').length;
         for (let i = 1; i <= teamCount; i++) {
