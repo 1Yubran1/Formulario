@@ -382,8 +382,8 @@
             </div>
         </center>
     </main>
-    <!-- Botón para borrar datos -->
-    <div class="fixed-bottom d-flex justify-content-end p-3">
+     <!-- Botón para borrar datos -->
+     <div class="fixed-bottom d-flex">
         <button type="button" class="btn btn-danger" onclick="borrarDatos()">Borrar Datos</button>
     </div>
 
@@ -392,9 +392,14 @@
     <script>
         // Función para borrar datos
         function borrarDatos() {
-            // Aquí puedes implementar la lógica para borrar datos de los formularios
-            // Por ejemplo, resetear los valores de los inputs a vacío o valores iniciales
-            // Puedes adaptar esta función según cómo estén implementados tus formularios
+            // Obtener todos los formularios por su id y resetear sus valores
+            for (let i = 1; i <= 31; i++) {
+                let formId = `form${i}`;
+                let form = document.getElementById(formId);
+                if (form) {
+                    form.reset(); // Resetear el formulario
+                }
+            }
             alert('Datos borrados');
         }
     </script>
