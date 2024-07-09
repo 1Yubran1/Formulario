@@ -42,12 +42,7 @@
 
         // Fetch para obtener los equipos desde el archivo JSON
         fetch('teams.json')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error fetching teams.json');
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 const teams = data.teams;
 
@@ -56,8 +51,8 @@
                     const formGroup = document.createElement('div');
                     formGroup.className = 'mb-3';
                     formGroup.innerHTML = `
-                        <label for="teamPoints${index + 1}" class="form-label">${index + 1}. ${team.name}</label>
-                        <select class="form-select" id="teamPoints${index + 1}" name="teamPoints${index + 1}" onchange="changeSelectStyle(${index + 1})">
+                        <label for="teamPoints${team.id}" class="form-label">${index + 1}. ${team.name}</label>
+                        <select class="form-select" id="teamPoints${team.id}" name="teamPoints${team.id}" onchange="changeSelectStyle(${team.id})">
                             <option value="0">0 puntos</option>
                             <option value="1">1 punto</option>
                             <option value="2">2 puntos</option>
@@ -75,13 +70,8 @@
                 });
 
                 // Fetch para obtener los datos ya guardados
-                fetch('https://form-urbanicentro-44f3ac5aea9b.herokuapp.com/get/form1') // Cambiar la URL según tu configuración
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Error fetching saved data');
-                        }
-                        return response.json();
-                    })
+                fetch('https://form-urbanicentro-44f3ac5aea9b.herokuapp.com/get/form1')
+                    .then(response => response.json())
                     .then(savedData => {
                         for (let key in savedData) {
                             if (savedData.hasOwnProperty(key)) {
@@ -96,7 +86,6 @@
                     .catch(error => {
                         console.error('Error fetching saved data:', error);
                     });
-
             })
             .catch(error => {
                 console.error('Error fetching teams.json:', error);
@@ -107,7 +96,7 @@
             const teamCount = document.querySelectorAll('[id^="teamPoints"]').length;
             if (validateFormData(teamCount)) {
                 const formData = collectFormData(teamCount);
-                const endpoint = 'https://form-urbanicentro-44f3ac5aea9b.herokuapp.com/submit/form1'; // Cambiar la URL según tu configuración
+                const endpoint = 'https://form-urbanicentro-44f3ac5aea9b.herokuapp.com/submit/form1';
                 sendData(endpoint, formData);
             } else {
                 showValidationMessages(false);
