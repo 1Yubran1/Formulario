@@ -240,7 +240,9 @@ app.post('/submit/form31', (req, res) => {
 // Endpoint para obtener los resultados (GET)
 app.get('/results', (req, res) => {
     res.json(results);
-});// Cargar equipos desde el archivo JSON
+});
+
+// Cargar equipos desde el archivo JSON
 let teams = require('./teams.json');
 
 // Endpoint para obtener todos los equipos
