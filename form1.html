@@ -40,8 +40,8 @@
         const form1Entries = document.getElementById('form1-entries');
         const alertContainer = document.getElementById('alertContainer');
 
-        // Fetch para obtener los equipos desde el archivo JSON
-        fetch('teams.json')
+        // Fetch para obtener los equipos desde el servidor
+        fetch('/teams')
             .then(response => response.json())
             .then(data => {
                 const teams = data.teams;
@@ -70,14 +70,14 @@
                 });
 
                 // Fetch para obtener los datos ya guardados
-                fetch('https://form-urbanicentro-44f3ac5aea9b.herokuapp.com/get/form1')
+                fetch('/results')
                     .then(response => response.json())
                     .then(savedData => {
-                        for (let key in savedData) {
-                            if (savedData.hasOwnProperty(key)) {
+                        for (let key in savedData.form1) {
+                            if (savedData.form1.hasOwnProperty(key)) {
                                 const selectElement = document.getElementById(key);
                                 if (selectElement) {
-                                    selectElement.value = savedData[key];
+                                    selectElement.value = savedData.form1[key];
                                     changeSelectStyle(key.replace('teamPoints', ''));
                                 }
                             }
@@ -88,7 +88,7 @@
                     });
             })
             .catch(error => {
-                console.error('Error fetching teams.json:', error);
+                console.error('Error fetching teams:', error);
             });
 
         const submitBtn = document.getElementById('submitBtn');
@@ -96,7 +96,7 @@
             const teamCount = document.querySelectorAll('[id^="teamPoints"]').length;
             if (validateFormData(teamCount)) {
                 const formData = collectFormData(teamCount);
-                const endpoint = 'https://form-urbanicentro-44f3ac5aea9b.herokuapp.com/submit/form1';
+                const endpoint = '/submit/form1';
                 sendData(endpoint, formData);
             } else {
                 showValidationMessages(false);
