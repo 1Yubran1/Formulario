@@ -29,20 +29,21 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const form20Entries = document.getElementById('form20-entries');
-        
-            // Fetch para obtener los equipos desde el archivo JSON
-            fetch('teams.json')
+            const alertContainer = document.getElementById('alertContainer');
+    
+            // Fetch para obtener los equipos desde el servidor
+            fetch('/teams')
                 .then(response => response.json())
                 .then(data => {
                     const teams = data.teams;
-        
+    
                     // Iterar sobre los nombres de los equipos y crear las entradas en el formulario
                     teams.forEach((team, index) => {
                         const formGroup = document.createElement('div');
                         formGroup.className = 'mb-3';
                         formGroup.innerHTML = `
-                            <label for="teamPoints${index + 1}" class="form-label">${team}</label>
-                            <select class="form-select" id="teamPoints${index + 1}" name="teamPoints${index + 1}" onchange="changeSelectStyle(${index + 1})">
+                            <label for="teamPoints${team.id}" class="form-label">${index + 1}. ${team.name}</label>
+                            <select class="form-select" id="teamPoints${team.id}" name="teamPoints${team.id}" onchange="changeSelectStyle(${team.id})">
                                 <option value="0">0 puntos</option>
                                 <option value="1">1 punto</option>
                                 <option value="2">2 puntos</option>
@@ -55,21 +56,19 @@
                                 <option value="9">9 puntos</option>
                                 <option value="10">10 puntos</option>
                             </select>
-                            <div class="valid-feedback" id="validFeedback${index + 1}" style="display:none;">Puntaje guardado</div>
-                            <div class="invalid-feedback" id="invalidFeedback${index + 1}" style="display:none;">Error al guardar. Intente de nuevo.</div>
                         `;
                         form20Entries.appendChild(formGroup);
                     });
-        
+    
                     // Fetch para obtener los datos ya guardados
-                    fetch('https://form-urbanicentro-44f3ac5aea9b.herokuapp.com/get/form20') // Cambiar la URL según tu configuración
+                    fetch('/results')
                         .then(response => response.json())
                         .then(savedData => {
-                            for (let key in savedData) {
-                                if (savedData.hasOwnProperty(key)) {
+                            for (let key in savedData.form20) {
+                                if (savedData.form20.hasOwnProperty(key)) {
                                     const selectElement = document.getElementById(key);
                                     if (selectElement) {
-                                        selectElement.value = savedData[key];
+                                        selectElement.value = savedData.form20[key];
                                         changeSelectStyle(key.replace('teamPoints', ''));
                                     }
                                 }
@@ -78,25 +77,24 @@
                         .catch(error => {
                             console.error('Error fetching saved data:', error);
                         });
-        
                 })
                 .catch(error => {
-                    console.error('Error fetching teams.json:', error);
+                    console.error('Error fetching teams:', error);
                 });
-        
+    
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.addEventListener('click', function() {
                 const teamCount = document.querySelectorAll('[id^="teamPoints"]').length;
                 if (validateFormData(teamCount)) {
                     const formData = collectFormData(teamCount);
-                    const endpoint = 'https://form-urbanicentro-44f3ac5aea9b.herokuapp.com/submit/form20'; // Cambiar la URL según tu configuración
+                    const endpoint = '/submit/form20';
                     sendData(endpoint, formData);
                 } else {
                     showValidationMessages(false);
                 }
             });
         });
-        
+    
         function changeSelectStyle(index) {
             const selectElement = document.getElementById(`teamPoints${index}`);
             if (selectElement.value !== "0") {
@@ -105,7 +103,7 @@
                 selectElement.classList.remove('alert', 'alert-success');
             }
         }
-        
+    
         function validateFormData(teamCount) {
             for (let i = 1; i <= teamCount; i++) {
                 const teamPoints = document.getElementById(`teamPoints${i}`).value.trim();
@@ -116,7 +114,7 @@
             }
             return true;
         }
-        
+    
         function collectFormData(teamCount) {
             const formData = {};
             for (let i = 1; i <= teamCount; i++) {
@@ -125,7 +123,7 @@
             }
             return formData;
         }
-        
+    
         function sendData(endpoint, data) {
             fetch(endpoint, {
                 method: 'POST',
@@ -133,37 +131,33 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(data)
-            }).then(response => response.text())
+            }).then(response => {
+                  if (!response.ok) {
+                      throw new Error('Error in response from server');
+                  }
+                  return response.text();
+              })
               .then(data => {
-                  showValidationMessages(true);
+                  showAlert('Datos guardados exitosamente.', 'success');
+                  setTimeout(() => {
+                      location.reload();
+                  }, 2000);
               })
               .catch(error => {
                   console.error('Error:', error);
-                  showValidationMessages(false);
+                  showAlert('Error al guardar los datos.', 'danger');
               });
         }
-        
-        function showValidationMessages(isValid) {
-            const teamCount = document.querySelectorAll('[id^="teamPoints"]').length;
-            for (let i = 1; i <= teamCount; i++) {
-                const validFeedback = document.getElementById(`validFeedback${i}`);
-                const invalidFeedback = document.getElementById(`invalidFeedback${i}`);
-                if (isValid) {
-                    validFeedback.style.display = 'block';
-                    invalidFeedback.style.display = 'none';
-                } else {
-                    validFeedback.style.display = 'none';
-                    invalidFeedback.style.display = 'block';
-                }
-            }
-            setTimeout(() => {
-                for (let i = 1; i <= teamCount; i++) {
-                    const validFeedback = document.getElementById(`validFeedback${i}`);
-                    const invalidFeedback = document.getElementById(`invalidFeedback${i}`);
-                    validFeedback.style.display = 'none';
-                    invalidFeedback.style.display = 'none';
-                }
-            }, 4000);
+    
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-dismissible fade show`;
+            alert.innerHTML = `
+                <strong>${message}</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            alertContainer.appendChild(alert);
         }
     </script>
 </body>
