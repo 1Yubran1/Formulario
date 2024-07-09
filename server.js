@@ -242,6 +242,43 @@ app.get('/results', (req, res) => {
     res.json(results);
 });
 
+// Cargar equipos desde el archivo JSON
+let teams = require('./teams.json');
+
+// Endpoint para obtener todos los equipos
+app.get('/teams', (req, res) => {
+    res.json(teams);
+});
+
+// Endpoint para crear un nuevo equipo
+app.post('/teams', (req, res) => {
+    const newTeam = { id: Date.now().toString(), name: req.body.name };
+    teams.teams.push(newTeam);
+    fs.writeFileSync('./teams.json', JSON.stringify(teams, null, 2));
+    res.status(201).json(newTeam);
+});
+
+// Endpoint para actualizar un equipo existente
+app.put('/teams/:id', (req, res) => {
+    const teamId = req.params.id;
+    const teamIndex = teams.teams.findIndex(team => team.id === teamId);
+    if (teamIndex !== -1) {
+        teams.teams[teamIndex].name = req.body.name;
+        fs.writeFileSync('./teams.json', JSON.stringify(teams, null, 2));
+        res.json(teams.teams[teamIndex]);
+    } else {
+        res.status(404).json({ message: 'Equipo no encontrado' });
+    }
+});
+
+// Endpoint para eliminar un equipo
+app.delete('/teams/:id', (req, res) => {
+    const teamId = req.params.id;
+    teams.teams = teams.teams.filter(team => team.id !== teamId);
+    fs.writeFileSync('./teams.json', JSON.stringify(teams, null, 2));
+    res.status(204).end();
+});
+
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });
