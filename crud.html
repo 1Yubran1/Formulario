@@ -41,6 +41,7 @@
                             <label for="editTeamName" class="form-label">Nombre del equipo</label>
                             <input type="text" class="form-control" id="editTeamName" required>
                         </div>
+                        <div id="editAlertContainer"></div>
                         <button type="submit" class="btn btn-primary">Guardar cambios</button>
                     </form>
                 </div>
@@ -54,6 +55,7 @@
         const teamNameInput = document.getElementById('teamName');
         const teamList = document.getElementById('teamList');
         const alertContainer = document.getElementById('alertContainer');
+        const editAlertContainer = document.getElementById('editAlertContainer');
         let editTeamId = null;
 
         // Fetch para obtener los equipos guardados
@@ -79,8 +81,11 @@
                 .then(response => response.json())
                 .then(team => {
                     addTeamToDOM(team, teamList.children.length + 1);
-                    showAlert('Equipo agregado exitosamente!', 'success', true);
+                    showAlert('Equipo agregado exitosamente!', 'success', alertContainer);
                     teamNameInput.value = '';
+                    setTimeout(() => {
+                        window.location.href = 'crud.html';
+                    }, 2000);
                 });
             }
         });
@@ -93,7 +98,10 @@
                     method: 'DELETE'
                 })
                 .then(() => {
-                    showAlert('Equipo eliminado exitosamente!', 'danger', true);
+                    showAlert('Equipo eliminado exitosamente!', 'danger', alertContainer);
+                    setTimeout(() => {
+                        window.location.href = 'crud.html';
+                    }, 2000);
                 });
             }
 
@@ -124,9 +132,12 @@
                 .then(updatedTeam => {
                     const teamElement = document.getElementById(`team-${updatedTeam.id}`);
                     teamElement.querySelector('.team-name').textContent = updatedTeam.name;
-                    showAlert('Equipo actualizado exitosamente!', 'success', true);
+                    showAlert('Equipo actualizado exitosamente!', 'success', editAlertContainer);
                     const editTeamModal = bootstrap.Modal.getInstance(document.getElementById('editTeamModal'));
-                    editTeamModal.hide();
+                    setTimeout(() => {
+                        editTeamModal.hide();
+                        window.location.href = 'crud.html';
+                    }, 2000);
                 });
             }
         });
@@ -145,15 +156,15 @@
             teamList.appendChild(teamElement);
         }
 
-        function showAlert(message, type, reload = false) {
+        function showAlert(message, type, container) {
             const alert = document.createElement('div');
             alert.className = `alert alert-${type} alert-dismissible fade show`;
             alert.role = 'alert';
             alert.innerHTML = `
                 ${message}
-                <button type="button" class="btn btn-primary" onclick="window.location.reload()">OK</button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             `;
-            alertContainer.appendChild(alert);
+            container.appendChild(alert);
         }
     });
     </script>
