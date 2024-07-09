@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -60,7 +60,7 @@
         fetch('/teams')
             .then(response => response.json())
             .then(data => {
-                data.teams.forEach(team => addTeamToDOM(team));
+                data.teams.forEach((team, index) => addTeamToDOM(team, index + 1));
             });
 
         teamForm.addEventListener('submit', function(event) {
@@ -78,10 +78,9 @@
                 })
                 .then(response => response.json())
                 .then(team => {
-                    addTeamToDOM(team);
-                    showAlert('Equipo agregado exitosamente!', 'success');
+                    addTeamToDOM(team, teamList.children.length + 1);
+                    showAlert('Equipo agregado exitosamente!', 'success', true);
                     teamNameInput.value = '';
-                    setTimeout(() => location.reload(), 2000);
                 });
             }
         });
@@ -94,8 +93,7 @@
                     method: 'DELETE'
                 })
                 .then(() => {
-                    showAlert('Equipo eliminado exitosamente!', 'danger');
-                    setTimeout(() => location.reload(), 2000);
+                    showAlert('Equipo eliminado exitosamente!', 'danger', true);
                 });
             }
 
@@ -126,19 +124,19 @@
                 .then(updatedTeam => {
                     const teamElement = document.getElementById(`team-${updatedTeam.id}`);
                     teamElement.querySelector('.team-name').textContent = updatedTeam.name;
-                    showAlert('Equipo actualizado exitosamente!', 'success');
+                    showAlert('Equipo actualizado exitosamente!', 'success', true);
                     const editTeamModal = bootstrap.Modal.getInstance(document.getElementById('editTeamModal'));
                     editTeamModal.hide();
                 });
             }
         });
 
-        function addTeamToDOM(team) {
+        function addTeamToDOM(team, index) {
             const teamElement = document.createElement('li');
             teamElement.id = `team-${team.id}`;
             teamElement.className = 'list-group-item d-flex justify-content-between align-items-center';
             teamElement.innerHTML = `
-                <span class="team-name">${team.name}</span>
+                <span class="team-name">${index}. ${team.name}</span>
                 <div>
                     <button class="btn btn-secondary btn-sm edit-btn" data-id="${team.id}">Editar</button>
                     <button class="btn btn-danger btn-sm delete-btn" data-id="${team.id}">Borrar</button>
@@ -147,21 +145,15 @@
             teamList.appendChild(teamElement);
         }
 
-        function showAlert(message, type) {
+        function showAlert(message, type, reload = false) {
             const alert = document.createElement('div');
             alert.className = `alert alert-${type} alert-dismissible fade show`;
             alert.role = 'alert';
             alert.innerHTML = `
                 ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn btn-primary" onclick="window.location.reload()">OK</button>
             `;
             alertContainer.appendChild(alert);
-
-            setTimeout(() => {
-                alert.classList.remove('show');
-                alert.classList.add('fade');
-                setTimeout(() => alert.remove(), 500);
-            }, 3000);
         }
     });
     </script>
