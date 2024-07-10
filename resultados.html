@@ -25,7 +25,7 @@
         <div class="d-grid gap-2 col-6 mx-auto">
             <br>
             <button id="download-image" class="btn btn-primary mt-3">Descargar como Imagen</button>
-            <button id="download-pdf" class="btn btn-danger mt-3">Descargar como PDF</button>
+            <button id="download-pdf" class="btn btn-secondary mt-3">Descargar como PDF</button>
             <br>
         </div>
     </div>
@@ -43,7 +43,6 @@
                     return response.json();
                 })
                 .then(results => {
-                    console.log('Resultados obtenidos:', results); // Depuración
                     const resultsBody = document.getElementById('results-body');
 
                     fetch('teams.json')
@@ -54,26 +53,20 @@
                             return response.json();
                         })
                         .then(data => {
-                            console.log('Datos de equipos obtenidos:', data); // Depuración
                             const teams = data.teams;
-                            const totalPoints = teams.reduce((acc, team) => {
-                                acc[team.name] = 0;
-                                return acc;
-                            }, {});
+                            const totalPoints = Array(teams.length).fill(0);
 
                             Object.keys(results).forEach(formKey => {
-                                teams.forEach(team => {
-                                    const teamKey = team.name;
+                                for (let i = 0; i < teams.length; i++) {
+                                    const teamKey = `teamPoints${i + 1}`;
                                     const points = results[formKey][teamKey] || 0;
-                                    totalPoints[teamKey] += points;
-                                });
+                                    totalPoints[i] += points;
+                                }
                             });
 
-                            console.log('Puntos totales calculados:', totalPoints); // Depuración
-
-                            const teamPointsArray = Object.entries(totalPoints).map(([team, points]) => ({
-                                team,
-                                points
+                            const teamPointsArray = teams.map((team, i) => ({
+                                team: team.name,
+                                points: totalPoints[i]
                             }));
 
                             teamPointsArray.sort((a, b) => b.points - a.points);
@@ -89,7 +82,7 @@
                                 progressBar.setAttribute('role', 'progressbar');
                                 progressBar.setAttribute('aria-valuenow', points);
                                 progressBar.setAttribute('aria-valuemin', '0');
-                                progressBar.setAttribute('aria-valuemax', '300');
+                                progressBar.setAttribute('aria-valuemax', '310');
                                 progressBar.innerHTML = `
                                     <div class="progress-bar ${progressClass}" style="width: ${(points / 300) * 100}%">
                                         ${team}: ${points} puntos
@@ -128,14 +121,6 @@
                 });
             });
 
-            // Recargar la página si se recibe un dato de los formularios
-            const eventSource = new EventSource('/events');
-            eventSource.onmessage = function(event) {
-                const data = JSON.parse(event.data);
-                if (data.refresh) {
-                    location.reload();
-                }
-            };
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
