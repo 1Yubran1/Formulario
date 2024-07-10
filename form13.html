@@ -51,8 +51,8 @@
                         const formGroup = document.createElement('div');
                         formGroup.className = 'mb-3';
                         formGroup.innerHTML = `
-                            <label for="teamPoints${team.id}" class="form-label">${index + 1}. ${team.name}</label>
-                            <select class="form-select" id="teamPoints${team.id}" name="teamPoints${team.id}" onchange="changeSelectStyle(${team.id})">
+                            <label for="${team.name}" class="form-label">${index + 1}. ${team.name}</label>
+                            <select class="form-select" id="${team.name}" name="${team.name}" onchange="changeSelectStyle('${team.name}')">
                                 <option value="0">0 puntos</option>
                                 <option value="1">1 punto</option>
                                 <option value="2">2 puntos</option>
@@ -78,7 +78,7 @@
                                     const selectElement = document.getElementById(key);
                                     if (selectElement) {
                                         selectElement.value = savedData.form13[key];
-                                        changeSelectStyle(key.replace('teamPoints', ''));
+                                        changeSelectStyle(key);
                                     }
                                 }
                             }
@@ -104,8 +104,8 @@
             });
         });
     
-        function changeSelectStyle(index) {
-            const selectElement = document.getElementById(`teamPoints${index}`);
+        function changeSelectStyle(name) {
+            const selectElement = document.getElementById(name);
             if (selectElement.value !== "0") {
                 selectElement.classList.add('alert', 'alert-success');
             } else {

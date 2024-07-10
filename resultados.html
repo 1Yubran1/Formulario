@@ -54,19 +54,22 @@
                         })
                         .then(data => {
                             const teams = data.teams;
-                            const totalPoints = Array(teams.length).fill(0);
+                            const totalPoints = teams.reduce((acc, team) => {
+                                acc[team.name] = 0;
+                                return acc;
+                            }, {});
 
                             Object.keys(results).forEach(formKey => {
-                                for (let i = 0; i < teams.length; i++) {
-                                    const teamKey = `teamPoints${i + 1}`;
+                                teams.forEach(team => {
+                                    const teamKey = team.name;
                                     const points = results[formKey][teamKey] || 0;
-                                    totalPoints[i] += points;
-                                }
+                                    totalPoints[teamKey] += points;
+                                });
                             });
 
-                            const teamPointsArray = teams.map((team, i) => ({
-                                team: team.name,
-                                points: totalPoints[i]
+                            const teamPointsArray = Object.entries(totalPoints).map(([team, points]) => ({
+                                team,
+                                points
                             }));
 
                             teamPointsArray.sort((a, b) => b.points - a.points);
@@ -121,6 +124,14 @@
                 });
             });
 
+            // Recargar la página si se recibe un dato de los formularios
+            const eventSource = new EventSource('/events');
+            eventSource.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                if (data.refresh) {
+                    location.reload();
+                }
+            };
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
