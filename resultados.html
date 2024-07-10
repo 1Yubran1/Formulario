@@ -43,6 +43,7 @@
                     return response.json();
                 })
                 .then(results => {
+                    console.log('Resultados obtenidos:', results); // Depuración
                     const resultsBody = document.getElementById('results-body');
 
                     fetch('teams.json')
@@ -53,6 +54,7 @@
                             return response.json();
                         })
                         .then(data => {
+                            console.log('Datos de equipos obtenidos:', data); // Depuración
                             const teams = data.teams;
                             const totalPoints = teams.reduce((acc, team) => {
                                 acc[team.name] = 0;
@@ -66,6 +68,8 @@
                                     totalPoints[teamKey] += points;
                                 });
                             });
+
+                            console.log('Puntos totales calculados:', totalPoints); // Depuración
 
                             const teamPointsArray = Object.entries(totalPoints).map(([team, points]) => ({
                                 team,
@@ -85,7 +89,7 @@
                                 progressBar.setAttribute('role', 'progressbar');
                                 progressBar.setAttribute('aria-valuenow', points);
                                 progressBar.setAttribute('aria-valuemin', '0');
-                                progressBar.setAttribute('aria-valuemax', '310');
+                                progressBar.setAttribute('aria-valuemax', '300');
                                 progressBar.innerHTML = `
                                     <div class="progress-bar ${progressClass}" style="width: ${(points / 300) * 100}%">
                                         ${team}: ${points} puntos
