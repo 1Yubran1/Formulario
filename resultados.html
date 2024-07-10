@@ -26,6 +26,7 @@
             <br>
             <button id="download-image" class="btn btn-primary mt-3">Descargar como Imagen</button>
             <button id="download-pdf" class="btn btn-secondary mt-3">Descargar como PDF</button>
+
             <br>
         </div>
     </div>
@@ -34,9 +35,7 @@
     <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
     <script>
-        let previousResults = {};
-
-        function fetchResults() {
+        document.addEventListener('DOMContentLoaded', function() {
             fetch('https://form-urbanicentro-44f3ac5aea9b.herokuapp.com/results')
                 .then(response => {
                     if (!response.ok) {
@@ -45,75 +44,62 @@
                     return response.json();
                 })
                 .then(results => {
-                    if (JSON.stringify(results) !== JSON.stringify(previousResults)) {
-                        previousResults = results;
-                        displayResults(results);
-                        location.reload();
-                    }
+                    const resultsBody = document.getElementById('results-body');
+
+                    fetch('teams.json')
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`Error fetching teams.json: ${response.statusText}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            const teams = data.teams;
+                            const totalPoints = Array(teams.length).fill(0);
+
+                            Object.keys(results).forEach(formKey => {
+                                for (let i = 0; i < teams.length; i++) {
+                                    const teamKey = `teamPoints${i + 1}`;
+                                    const points = results[formKey][teamKey] || 0;
+                                    totalPoints[i] += points;
+                                }
+                            });
+
+                            const teamPointsArray = teams.map((team, i) => ({
+                                team: team.name,
+                                points: totalPoints[i]
+                            }));
+
+                            teamPointsArray.sort((a, b) => b.points - a.points);
+
+                            teamPointsArray.forEach(({ team, points }) => {
+                                const progressClass = points >= 300 ? 'bg-success' :
+                                                      points >= 200 ? 'bg-info text-dark' :
+                                                      points >= 100 ? 'bg-warning text-dark' :
+                                                      'bg-danger';
+
+                                const progressBar = document.createElement('div');
+                                progressBar.className = 'progress';
+                                progressBar.setAttribute('role', 'progressbar');
+                                progressBar.setAttribute('aria-valuenow', points);
+                                progressBar.setAttribute('aria-valuemin', '0');
+                                progressBar.setAttribute('aria-valuemax', '310');
+                                progressBar.innerHTML = `
+                                    <div class="progress-bar ${progressClass}" style="width: ${(points / 300) * 100}%">
+                                        ${team}: ${points} puntos
+                                    </div>
+                                `;
+
+                                resultsBody.appendChild(progressBar);
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Error fetching teams.json:', error);
+                        });
                 })
                 .catch(error => {
                     console.error('Error fetching results:', error);
                 });
-        }
-
-        function displayResults(results) {
-            const resultsBody = document.getElementById('results-body');
-            resultsBody.innerHTML = ''; // Limpiar resultados previos
-
-            fetch('teams.json')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Error fetching teams.json: ${response.statusText}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    const teams = data.teams;
-                    const totalPoints = Array(teams.length).fill(0);
-
-                    Object.keys(results).forEach(formKey => {
-                        for (let i = 0; i < teams.length; i++) {
-                            const teamKey = `teamPoints${i + 1}`;
-                            const points = results[formKey][teamKey] || 0;
-                            totalPoints[i] += points;
-                        }
-                    });
-
-                    const teamPointsArray = teams.map((team, i) => ({
-                        team: team.name,
-                        points: totalPoints[i]
-                    }));
-
-                    teamPointsArray.sort((a, b) => b.points - a.points);
-
-                    teamPointsArray.forEach(({ team, points }) => {
-                        const progressClass = points >= 300 ? 'bg-success' :
-                                              points >= 200 ? 'bg-info text-dark' :
-                                              points >= 100 ? 'bg-warning text-dark' :
-                                              'bg-danger';
-
-                        const progressBar = document.createElement('div');
-                        progressBar.className = 'progress';
-                        progressBar.setAttribute('role', 'progressbar');
-                        progressBar.setAttribute('aria-valuenow', points);
-                        progressBar.setAttribute('aria-valuemin', '0');
-                        progressBar.setAttribute('aria-valuemax', '310');
-                        progressBar.innerHTML = `
-                            <div class="progress-bar ${progressClass}" style="width: ${(points / 300) * 100}%">
-                                ${team}: ${points} puntos
-                            </div>
-                        `;
-
-                        resultsBody.appendChild(progressBar);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching teams.json:', error);
-                });
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            fetchResults(); // Llamada inicial para obtener resultados
 
             document.getElementById('download-image').addEventListener('click', function() {
                 html2canvas(document.getElementById('results-body')).then(canvas => {
@@ -136,8 +122,6 @@
                 });
             });
 
-            // Comprobar resultados nuevos cada 10 segundos (ajustar según necesidades)
-            setInterval(fetchResults, 10000);
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
