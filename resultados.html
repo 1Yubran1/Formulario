@@ -91,6 +91,9 @@
 
                                 resultsBody.appendChild(progressBar);
                             });
+
+                            // Recargar la página después de mostrar los resultados
+                            location.reload();
                         })
                         .catch(error => {
                             console.error('Error fetching teams.json:', error);
