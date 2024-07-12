@@ -65,26 +65,29 @@
             let editTeamId = null;
 
             // Función para cargar y mostrar los equipos
-            function loadTeams() {
-                fetch('/teams')
-                    .then(response => response.json())
-                    .then(data => {
-                        teamTable.innerHTML = ''; // Limpiar la tabla antes de actualizarla
-                        data.teams.forEach((team, index) => {
-                            const row = `
-                                <tr id="team-${team.id}">
-                                    <th scope="row">${index + 1}</th>
-                                    <td>${team.name}</td>
-                                    <td>
-                                        <button class="btn btn-secondary btn-sm edit-btn" data-id="${team.id}">Editar</button>
-                                        <button class="btn btn-danger btn-sm delete-btn" data-id="${team.id}">Borrar</button>
-                                    </td>
-                                </tr>
-                            `;
-                            teamTable.innerHTML += row;
-                        });
-                    });
-            }
+function loadTeams() {
+    fetch('/teams')
+        .then(response => response.json())
+        .then(data => {
+            // Ordenar equipos alfabéticamente por nombre
+            const sortedTeams = data.teams.sort((a, b) => a.name.localeCompare(b.name));
+            
+            teamTable.innerHTML = ''; // Limpiar la tabla antes de actualizarla
+            sortedTeams.forEach((team, index) => {
+                const row = `
+                    <tr id="team-${team.id}">
+                        <th scope="row">${index + 1}</th>
+                        <td>${team.name}</td>
+                        <td>
+                            <button class="btn btn-secondary btn-sm edit-btn" data-id="${team.id}">Editar</button>
+                            <button class="btn btn-danger btn-sm delete-btn" data-id="${team.id}">Borrar</button>
+                        </td>
+                    </tr>
+                `;
+                teamTable.innerHTML += row;
+            });
+        });
+}
 
             // Cargar equipos al cargar la página
             loadTeams();

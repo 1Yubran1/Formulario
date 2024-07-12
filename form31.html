@@ -54,7 +54,7 @@
                             <label for="teamPoints${team.id}" class="form-label">${index + 1}. ${team.name}</label>
                             <select class="form-select" id="teamPoints${team.id}" name="teamPoints${team.id}" onchange="changeSelectStyle(${team.id})">
                                 <option value="0">0 puntos</option>
-                                <option value="-1">-1 punto</option>
+                                 <option value="-1">-1 punto</option>
                                 <option value="-2">-2 puntos</option>
                                 <option value="-3">-3 puntos</option>
                                 <option value="-4">-4 puntos</option>
@@ -103,9 +103,15 @@
     
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.addEventListener('click', function() {
-                const teamCount = document.querySelectorAll('[id^="teamPoints"]').length;
-                if (validateFormData(teamCount)) {
-                    const formData = collectFormData(teamCount);
+                const teams = [...document.querySelectorAll('[id^="teamPoints"]')].map(select => {
+                    return {
+                        id: select.id.replace('teamPoints', ''),
+                        value: select.value
+                    };
+                });
+    
+                if (validateFormData(teams)) {
+                    const formData = collectFormData(teams);
                     const endpoint = '/submit/form31';
                     sendData(endpoint, formData);
                 } else {
@@ -123,10 +129,9 @@
             }
         }
     
-        function validateFormData(teamCount) {
-            for (let i = 1; i <= teamCount; i++) {
-                const teamPoints = document.getElementById(`teamPoints${i}`).value.trim();
-                const points = parseInt(teamPoints);
+        function validateFormData(teams) {
+            for (let team of teams) {
+                const points = parseInt(team.value);
                 if (isNaN(points) || points < 0 || points > 10) {
                     return false;
                 }
@@ -134,12 +139,11 @@
             return true;
         }
     
-        function collectFormData(teamCount) {
+        function collectFormData(teams) {
             const formData = {};
-            for (let i = 1; i <= teamCount; i++) {
-                const teamPoints = document.getElementById(`teamPoints${i}`).value.trim();
-                formData[`teamPoints${i}`] = parseInt(teamPoints);
-            }
+            teams.forEach(team => {
+                formData[`teamPoints${team.id}`] = parseInt(team.value);
+            });
             return formData;
         }
     
@@ -151,21 +155,21 @@
                 },
                 body: JSON.stringify(data)
             }).then(response => {
-                  if (!response.ok) {
-                      throw new Error('Error in response from server');
-                  }
-                  return response.text();
-              })
-              .then(data => {
-                  showAlert('Datos guardados exitosamente.', 'success');
-                  setTimeout(() => {
-                      location.reload();
-                  }, 2000);
-              })
-              .catch(error => {
-                  console.error('Error:', error);
-                  showAlert('Error al guardar los datos.', 'danger');
-              });
+                if (!response.ok) {
+                    throw new Error('Error in response from server');
+                }
+                return response.text();
+            })
+            .then(data => {
+                showAlert('Datos guardados exitosamente.', 'success');
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showAlert('Error al guardar los datos.', 'danger');
+            });
         }
     
         function showAlert(message, type) {
