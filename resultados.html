@@ -56,22 +56,18 @@
                             const teams = data.teams;
                             const totalPoints = Array(teams.length).fill(0);
 
+                            // Procesar los resultados
                             Object.keys(results).forEach(formKey => {
                                 for (let i = 0; i < teams.length; i++) {
                                     const teamKey = `teamPoints${i + 1}`;
                                     const points = results[formKey][teamKey] || 0;
-                                    totalPoints[i] += points;
+                                    totalPoints[i] += points; // Sumar puntos a cada equipo
                                 }
                             });
 
-                            const teamPointsArray = teams.map((team, i) => ({
-                                team: team.name,
-                                points: totalPoints[i]
-                            }));
-
-                            teamPointsArray.sort((a, b) => b.points - a.points);
-
-                            teamPointsArray.forEach(({ team, points }) => {
+                            // Mostrar resultados en la interfaz
+                            teams.forEach((team, i) => {
+                                const points = totalPoints[i];
                                 const progressClass = points >= 300 ? 'bg-success' :
                                                       points >= 200 ? 'bg-info text-dark' :
                                                       points >= 100 ? 'bg-warning text-dark' :
@@ -85,7 +81,7 @@
                                 progressBar.setAttribute('aria-valuemax', '310');
                                 progressBar.innerHTML = `
                                     <div class="progress-bar ${progressClass}" style="width: ${(points / 300) * 100}%">
-                                        ${team}: ${points} puntos
+                                        ${team.name}: ${points} puntos
                                     </div>
                                 `;
 
