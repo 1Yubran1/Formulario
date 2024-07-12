@@ -240,22 +240,22 @@ app.get('/results', (req, res) => {
     res.json(results);
 });
 
+// Cargar equipos desde teams.json
 let teams = require('./teams.json');
+
+// Función para obtener el siguiente ID
+function getNextId(teams) {
+    const ids = teams.teams.map(team => parseInt(team.id, 10));
+    return Math.max(...ids) + 1; // Incrementa el ID más alto
+}
 
 app.get('/teams', (req, res) => {
     res.json(teams);
 });
 
-app.post('/teams', (req, res) => {
-    const newTeam = { id: Date.now().toString(), name: req.body.name };
-    teams.teams.push(newTeam);
-    fs.writeFileSync('./teams.json', JSON.stringify(teams, null, 2));
-    res.status(201).json(newTeam);
-});
-
 // Endpoint para crear un nuevo equipo
 app.post('/teams', (req, res) => {
-    const newTeam = { id: Date.now().toString(), name: req.body.name };
+    const newTeam = { id: getNextId(teams).toString(), name: req.body.name }; // Usar getNextId
     teams.teams.push(newTeam);
     fs.writeFileSync('./teams.json', JSON.stringify(teams, null, 2));
     res.status(201).json(newTeam);
