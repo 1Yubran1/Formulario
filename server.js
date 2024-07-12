@@ -2,17 +2,16 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs'); // Asegúrate de incluir el módulo fs
 const app = express();
-const port = process.env.PORT || 5501; // Utiliza el puerto proporcionado por Heroku o 5501 para desarrollo local
+const port = process.env.PORT || 5501;
 
-app.use(cors()); // Permitir CORS para todas las rutas
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Servir archivos estáticos desde el directorio actual
 app.use(express.static(path.join(__dirname)));
 
-// Ruta para servir el archivo index.html
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
@@ -237,17 +236,21 @@ app.post('/submit/form31', (req, res) => {
     res.send('Valores de la estación recibido');
 });
 
-// Endpoint para obtener los resultados (GET)
 app.get('/results', (req, res) => {
     res.json(results);
 });
 
-// Cargar equipos desde el archivo JSON
 let teams = require('./teams.json');
 
-// Endpoint para obtener todos los equipos
 app.get('/teams', (req, res) => {
     res.json(teams);
+});
+
+app.post('/teams', (req, res) => {
+    const newTeam = { id: Date.now().toString(), name: req.body.name };
+    teams.teams.push(newTeam);
+    fs.writeFileSync('./teams.json', JSON.stringify(teams, null, 2));
+    res.status(201).json(newTeam);
 });
 
 // Endpoint para crear un nuevo equipo
