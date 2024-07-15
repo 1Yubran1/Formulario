@@ -46,6 +46,9 @@
                 .then(data => {
                     const teams = data.teams;
     
+                    // Ordenar los equipos alfabéticamente por nombre
+                    teams.sort((a, b) => a.name.localeCompare(b.name));
+    
                     // Iterar sobre los nombres de los equipos y crear las entradas en el formulario
                     teams.forEach((team, index) => {
                         const formGroup = document.createElement('div');

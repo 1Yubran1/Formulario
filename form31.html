@@ -46,6 +46,9 @@
                 .then(data => {
                     const teams = data.teams;
     
+                    // Ordenar los equipos alfabéticamente por nombre
+                    teams.sort((a, b) => a.name.localeCompare(b.name));
+    
                     // Iterar sobre los nombres de los equipos y crear las entradas en el formulario
                     teams.forEach((team, index) => {
                         const formGroup = document.createElement('div');
@@ -54,7 +57,7 @@
                             <label for="teamPoints${team.id}" class="form-label">${index + 1}. ${team.name}</label>
                             <select class="form-select" id="teamPoints${team.id}" name="teamPoints${team.id}" onchange="changeSelectStyle(${team.id})">
                                 <option value="0">0 puntos</option>
-                                 <option value="-1">-1 punto</option>
+                                <option value="-1">-1 punto</option>
                                 <option value="-2">-2 puntos</option>
                                 <option value="-3">-3 puntos</option>
                                 <option value="-4">-4 puntos</option>

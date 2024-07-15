@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="img/ods.png" type="image/png">
-    <title>CRUD de Equipos</title>
+    <title>Registro de Equipos</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-        <h1 class="my-4">CRUD de Equipos</h1>
+        <h1 class="my-4">Registro de Equipos</h1>
 
         <form id="teamForm" class="mb-4">
             <div class="form-group">
@@ -20,6 +20,7 @@
         </form>
 
         <h2>Lista de Equipos</h2>
+        <button id="exportPdfBtn" class="btn btn-secondary mb-3">Exportar a PDF</button>
         <table id="teamTable" class="table">
             <thead>
                 <tr>
@@ -57,37 +58,39 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.4.0/dist/jspdf.umd.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const teamForm = document.getElementById('teamForm');
             const teamNameInput = document.getElementById('teamName');
-            const teamTable = document.getElementById('teamTable');
+            const teamTable = document.getElementById('teamTable').querySelector('tbody');
+            const exportPdfBtn = document.getElementById('exportPdfBtn');
             let editTeamId = null;
 
             // Función para cargar y mostrar los equipos
-function loadTeams() {
-    fetch('/teams')
-        .then(response => response.json())
-        .then(data => {
-            // Ordenar equipos alfabéticamente por nombre
-            const sortedTeams = data.teams.sort((a, b) => a.name.localeCompare(b.name));
-            
-            teamTable.innerHTML = ''; // Limpiar la tabla antes de actualizarla
-            sortedTeams.forEach((team, index) => {
-                const row = `
-                    <tr id="team-${team.id}">
-                        <th scope="row">${index + 1}</th>
-                        <td>${team.name}</td>
-                        <td>
-                            <button class="btn btn-secondary btn-sm edit-btn" data-id="${team.id}">Editar</button>
-                            <button class="btn btn-danger btn-sm delete-btn" data-id="${team.id}">Borrar</button>
-                        </td>
-                    </tr>
-                `;
-                teamTable.innerHTML += row;
-            });
-        });
-}
+            function loadTeams() {
+                fetch('/teams')
+                    .then(response => response.json())
+                    .then(data => {
+                        // Ordenar equipos alfabéticamente por nombre
+                        const sortedTeams = data.teams.sort((a, b) => a.name.localeCompare(b.name));
+                        
+                        teamTable.innerHTML = ''; // Limpiar la tabla antes de actualizarla
+                        sortedTeams.forEach((team, index) => {
+                            const row = `
+                                <tr id="team-${team.id}">
+                                    <th scope="row">${index + 1}</th>
+                                    <td>${team.name}</td>
+                                    <td>
+                                        <button class="btn btn-secondary btn-sm edit-btn" data-id="${team.id}">Editar</button>
+                                        <button class="btn btn-danger btn-sm delete-btn" data-id="${team.id}">Borrar</button>
+                                    </td>
+                                </tr>
+                            `;
+                            teamTable.innerHTML += row;
+                        });
+                    });
+            }
 
             // Cargar equipos al cargar la página
             loadTeams();
@@ -154,6 +157,36 @@ function loadTeams() {
                         loadTeams(); // Recargar la tabla de equipos
                     });
                 }
+            });
+
+            // Exportar a PDF
+            exportPdfBtn.addEventListener('click', function() {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                // Título del documento
+                doc.setFontSize(18);
+                doc.text('Lista de Equipos', 14, 22);
+
+                // Obtener datos de la tabla
+                const rows = [];
+                document.querySelectorAll('#teamTable tbody tr').forEach(tr => {
+                    const row = [];
+                    tr.querySelectorAll('th, td').forEach(td => {
+                        row.push(td.innerText);
+                    });
+                    rows.push(row);
+                });
+
+                // Añadir datos de la tabla al PDF
+                doc.autoTable({
+                    head: [['#', 'Nombre del Equipo', 'Acciones']],
+                    body: rows,
+                    startY: 30,
+                });
+
+                // Descargar el PDF
+                doc.save('Lista_de_Equipos.pdf');
             });
         });
     </script>
