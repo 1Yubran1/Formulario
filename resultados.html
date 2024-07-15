@@ -4,123 +4,193 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="img/ods.png" type="image/png">
-    <title>Resultados de los Equipos</title>
+    <title>Registro de Equipos</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .progress-bar {
-            font-size: 1rem;
-        }
-        .progress {
-            margin-bottom: 20px;
-            height: 30px;
-        }
-    </style>
 </head>
 <body>
     <div class="container">
-        <h1 class="mt-5">Resultados de los Equipos</h1>
-        <div id="results-body" class="mt-3">
-            <!-- Aquí se generarán los resultados de los equipos -->
-        </div>
-        <div class="d-grid gap-2 col-6 mx-auto">
-            <br>
-            <a href="lista.html" class="btn btn-primary mt-3">Ir al inicio</a>
-            <button id="download-image" class="btn btn-primary mt-3">Descargar como Imagen</button>
-            <button id="download-pdf" class="btn btn-danger mt-3">Descargar como PDF</button>
-            <br>
+        <h1 class="my-4">Registro de Equipos</h1>
+
+        <form id="teamForm" class="mb-4">
+            <div class="form-group">
+                <label for="teamName">Nombre del equipo</label>
+                <input type="text" class="form-control" id="teamName" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Agregar Equipo</button>
+            <a href="lista.html" class="btn btn-primary">Ir al inicio</a>
+        </form>
+
+        <h2>Lista de Equipos</h2>
+        <button id="exportPdfBtn" class="btn btn-danger mb-3">Exportar a PDF</button>
+        <table id="teamTable" class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Nombre del Equipo</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Filas de equipos se mostrarán aquí -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal para editar equipo -->
+    <div class="modal fade" id="editTeamModal" tabindex="-1" aria-labelledby="editTeamModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editTeamModalLabel">Editar Equipo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editTeamForm">
+                        <div class="mb-3">
+                            <label for="editTeamName" class="form-label">Nombre del equipo</label>
+                            <input type="text" class="form-control" id="editTeamName" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            fetch('/results')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Error fetching results: ${response.statusText}`);
-                    }
-                    return response.json();
-                })
-                .then(results => {
-                    fetch('/teams')
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error(`Error fetching teams: ${response.statusText}`);
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            const teams = data.teams;
-                            const totalPoints = Array(teams.length).fill(0);
+            const teamForm = document.getElementById('teamForm');
+            const teamNameInput = document.getElementById('teamName');
+            const teamTable = document.getElementById('teamTable').querySelector('tbody');
+            const exportPdfBtn = document.getElementById('exportPdfBtn');
+            let editTeamId = null;
 
-                            Object.keys(results).forEach(formKey => {
-                                for (let i = 0; i < teams.length; i++) {
-                                    const teamKey = `teamPoints${i + 1}`;
-                                    const points = results[formKey][teamKey] || 0;
-                                    totalPoints[i] += points;
-                                }
-                            });
-
-                            // Crear un array de equipos con puntos y ordenar
-                            const teamsWithPoints = teams.map((team, i) => ({
-                                name: team.name,
-                                points: totalPoints[i],
-                            })).sort((a, b) => b.points - a.points); // Ordenar de mayor a menor
-
-                            // Mostrar las barras de progreso
-                            teamsWithPoints.forEach(({ name, points }) => {
-                                const progressClass = points >= 300 ? 'bg-success' :
-                                                      points >= 200 ? 'bg-info text-dark' :
-                                                      points >= 100 ? 'bg-warning text-dark' :
-                                                      'bg-danger';
-
-                                const progressBar = document.createElement('div');
-                                progressBar.className = 'progress';
-                                progressBar.setAttribute('role', 'progressbar');
-                                progressBar.setAttribute('aria-valuenow', points);
-                                progressBar.setAttribute('aria-valuemin', '0');
-                                progressBar.setAttribute('aria-valuemax', '310');
-                                progressBar.innerHTML = `
-                                    <div class="progress-bar ${progressClass}" style="width: ${(points / 300) * 100}%">
-                                        ${name}: ${points} puntos
-                                    </div>
-                                `;
-
-                                document.getElementById('results-body').appendChild(progressBar);
-                            });
-                        })
-                        .catch(error => {
-                            console.error('Error fetching teams:', error);
+            // Función para cargar y mostrar los equipos
+            function loadTeams() {
+                fetch('/teams')
+                    .then(response => response.json())
+                    .then(data => {
+                        // Ordenar equipos alfabéticamente por nombre
+                        const sortedTeams = data.teams.sort((a, b) => a.name.localeCompare(b.name));
+                        
+                        teamTable.innerHTML = ''; // Limpiar la tabla antes de actualizarla
+                        sortedTeams.forEach((team, index) => {
+                            const row = `
+                                <tr id="team-${team.id}">
+                                    <th scope="row">${index + 1}</th>
+                                    <td>${team.name}</td>
+                                    <td>
+                                        <button class="btn btn-secondary btn-sm edit-btn" data-id="${team.id}">Editar</button>
+                                        <button class="btn btn-danger btn-sm delete-btn" data-id="${team.id}">Borrar</button>
+                                    </td>
+                                </tr>
+                            `;
+                            teamTable.innerHTML += row;
                         });
-                })
-                .catch(error => {
-                    console.error('Error fetching results:', error);
-                });
+                    });
+            }
 
-            document.getElementById('download-image').addEventListener('click', function() {
-                html2canvas(document.getElementById('results-body')).then(canvas => {
-                    const link = document.createElement('a');
-                    link.download = 'resultados_equipos.png';
-                    link.href = canvas.toDataURL();
-                    link.click();
-                });
+            // Cargar equipos al cargar la página
+            loadTeams();
+
+            // Agregar equipo
+            teamForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const teamName = teamNameInput.value.trim();
+                if (teamName) {
+                    fetch('/teams', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ name: teamName })
+                    })
+                    .then(() => {
+                        teamNameInput.value = '';
+                        loadTeams(); // Recargar la tabla de equipos
+                    });
+                }
             });
 
-            document.getElementById('download-pdf').addEventListener('click', function() {
-                html2canvas(document.getElementById('results-body')).then(canvas => {
-                    const imgData = canvas.toDataURL('image/png');
-                    const pdf = new jspdf.jsPDF();
-                    const imgProps = pdf.getImageProperties(imgData);
-                    const pdfWidth = pdf.internal.pageSize.getWidth();
-                    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-                    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-                    pdf.save('resultados_equipos.pdf');
+            // Editar equipo (abrir modal)
+            teamTable.addEventListener('click', function(event) {
+                if (event.target.classList.contains('edit-btn')) {
+                    const teamId = event.target.dataset.id;
+                    const teamName = event.target.closest('tr').querySelector('td:nth-child(2)').textContent;
+                    editTeamId = teamId;
+                    document.getElementById('editTeamName').value = teamName;
+                    const editTeamModal = new bootstrap.Modal(document.getElementById('editTeamModal'));
+                    editTeamModal.show();
+                }
+            });
+
+            // Guardar cambios al editar equipo
+            document.getElementById('editTeamForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const teamName = document.getElementById('editTeamName').value.trim();
+                if (teamName && editTeamId) {
+                    fetch(`/teams/${editTeamId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ name: teamName })
+                    })
+                    .then(() => {
+                        const editTeamModal = bootstrap.Modal.getInstance(document.getElementById('editTeamModal'));
+                        editTeamModal.hide();
+                        loadTeams(); // Recargar la tabla de equipos
+                    });
+                }
+            });
+
+            // Eliminar equipo
+            teamTable.addEventListener('click', function(event) {
+                if (event.target.classList.contains('delete-btn')) {
+                    const teamId = event.target.dataset.id;
+                    fetch(`/teams/${teamId}`, {
+                        method: 'DELETE'
+                    })
+                    .then(() => {
+                        loadTeams(); // Recargar la tabla de equipos
+                    });
+                }
+            });
+
+            // Exportar a PDF
+            exportPdfBtn.addEventListener('click', function() {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                // Título del documento
+                doc.setFontSize(18);
+                doc.text('Lista de Equipos', 14, 22);
+
+                // Obtener datos de la tabla
+                const rows = [];
+                document.querySelectorAll('#teamTable tbody tr').forEach(tr => {
+                    const row = [];
+                    tr.querySelectorAll('th, td').forEach(td => {
+                        row.push(td.innerText);
+                    });
+                    rows.push(row);
                 });
+
+                // Añadir datos de la tabla al PDF
+                doc.autoTable({
+                    head: [['#', 'Nombre del Equipo', 'Acciones']],
+                    body: rows,
+                    startY: 30,
+                });
+
+                // Descargar el PDF
+                doc.save('Lista_de_Equipos.pdf');
             });
         });
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 </body>
 </html>

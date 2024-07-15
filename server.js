@@ -17,36 +17,12 @@ app.get('/', (req, res) => {
 });
 
 let results = {
-    form1: {},
-    form2: {},
-    form3: {},
-    form4: {},
-    form5: {},
-    form6: {},
-    form7: {},
-    form8: {},
-    form9: {},
-    form10: {},
-    form11: {},
-    form12: {},
-    form13: {},
-    form14: {},
-    form15: {},
-    form16: {},
-    form17: {},
-    form18: {},
-    form19: {},
-    form20: {},
-    form21: {},
-    form22: {},
-    form23: {},
-    form24: {},
-    form25: {},
-    form26: {},
-    form27: {},
-    form28: {},
-    form29: {},
-    form30: {},
+    form1: {}, form2: {}, form3: {}, form4: {}, form5: {},
+    form6: {}, form7: {}, form8: {}, form9: {}, form10: {},
+    form11: {}, form12: {}, form13: {}, form14: {}, form15: {},
+    form16: {}, form17: {}, form18: {}, form19: {}, form20: {},
+    form21: {}, form22: {}, form23: {}, form24: {}, form25: {},
+    form26: {}, form27: {}, form28: {}, form29: {}, form30: {},
     form31: {},
 };
 
@@ -246,16 +222,17 @@ let teams = require('./teams.json');
 // Función para obtener el siguiente ID
 function getNextId(teams) {
     const ids = teams.teams.map(team => parseInt(team.id, 10));
-    return Math.max(...ids) + 1; // Incrementa el ID más alto
+    return ids.length ? Math.max(...ids) + 1 : 1; // Incrementa el ID más alto o empieza desde 1
 }
 
 app.get('/teams', (req, res) => {
-    res.json(teams);
+    const sortedTeams = teams.teams.sort((a, b) => a.name.localeCompare(b.name));
+    res.json({ teams: sortedTeams });
 });
 
 // Endpoint para crear un nuevo equipo
 app.post('/teams', (req, res) => {
-    const newTeam = { id: getNextId(teams).toString(), name: req.body.name }; // Usar getNextId
+    const newTeam = { id: getNextId(teams).toString(), name: req.body.name };
     teams.teams.push(newTeam);
     fs.writeFileSync('./teams.json', JSON.stringify(teams, null, 2));
     res.status(201).json(newTeam);
