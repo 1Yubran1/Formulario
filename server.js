@@ -259,6 +259,19 @@ app.delete('/teams/:id', (req, res) => {
     res.status(204).end();
 });
 
+app.post('/delete-results', (req, res) => {
+    const resultsPath = path.join(__dirname, 'results.json');
+
+    fs.writeFile(resultsPath, '[]', (err) => {
+        if (err) {
+            console.error('Error al eliminar los datos:', err);
+            res.status(500).send('Hubo un error al eliminar los datos');
+        } else {
+            res.status(200).send('Datos eliminados correctamente');
+        }
+    });
+});
+
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });

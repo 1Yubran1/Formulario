@@ -384,6 +384,27 @@
                 </div>
             </div>
         </center>
+        <script>
+            function eliminarDatos() {
+                if (confirm("¿Estás seguro de que quieres eliminar todos los datos?")) {
+                    fetch('/delete-results', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(response => {
+                        if (response.ok) {
+                            alert("Datos eliminados correctamente");
+                        } else {
+                            alert("Hubo un error al eliminar los datos");
+                        }
+                    }).catch(error => {
+                        console.error('Error:', error);
+                        alert("Hubo un error al eliminar los datos");
+                    });
+                }
+            }
+        </script>
     </main>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
