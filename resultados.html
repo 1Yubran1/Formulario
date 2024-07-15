@@ -55,12 +55,14 @@
                             const teams = data.teams;
                             const totalPoints = Array(teams.length).fill(0);
 
+                            // Asignar puntos correctamente
                             Object.keys(results).forEach(formKey => {
-                                for (let i = 0; i < teams.length; i++) {
+                                teams.forEach((team, i) => {
                                     const teamKey = `teamPoints${i + 1}`;
-                                    const points = results[formKey][teamKey] || 0;
-                                    totalPoints[i] += points;
-                                }
+                                    if (results[formKey].hasOwnProperty(teamKey)) {
+                                        totalPoints[i] += parseInt(results[formKey][teamKey], 10) || 0;
+                                    }
+                                });
                             });
 
                             // Crear un array de equipos con puntos y ordenar
@@ -81,7 +83,7 @@
                                 progressBar.setAttribute('role', 'progressbar');
                                 progressBar.setAttribute('aria-valuenow', points);
                                 progressBar.setAttribute('aria-valuemin', '0');
-                                progressBar.setAttribute('aria-valuemax', '310');
+                                progressBar.setAttribute('aria-valuemax', '300');
                                 progressBar.innerHTML = `
                                     <div class="progress-bar ${progressClass}" style="width: ${(points / 300) * 100}%">
                                         ${name}: ${points} puntos
