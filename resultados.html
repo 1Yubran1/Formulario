@@ -53,22 +53,27 @@
                         })
                         .then(data => {
                             const teams = data.teams;
-                            const totalPoints = Array(teams.length).fill(0);
+                            const totalPoints = {};
+
+                            // Inicializar totalPoints con los IDs de los equipos
+                            teams.forEach(team => {
+                                totalPoints[team.id] = 0;
+                            });
 
                             // Asignar puntos correctamente
                             Object.keys(results).forEach(formKey => {
-                                teams.forEach((team, i) => {
-                                    const teamKey = `teamPoints${i + 1}`;
+                                teams.forEach(team => {
+                                    const teamKey = `teamPoints${team.id}`;
                                     if (results[formKey].hasOwnProperty(teamKey)) {
-                                        totalPoints[i] += parseInt(results[formKey][teamKey], 10) || 0;
+                                        totalPoints[team.id] += parseInt(results[formKey][teamKey], 10) || 0;
                                     }
                                 });
                             });
 
                             // Crear un array de equipos con puntos y ordenar
-                            const teamsWithPoints = teams.map((team, i) => ({
+                            const teamsWithPoints = teams.map(team => ({
                                 name: team.name,
-                                points: totalPoints[i],
+                                points: totalPoints[team.id],
                             })).sort((a, b) => b.points - a.points); // Ordenar de mayor a menor
 
                             // Mostrar las barras de progreso
