@@ -3,8 +3,20 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs'); // Asegúrate de incluir el módulo fs
+const multer = require('multer'); // Importa multer
 const app = express();
 const port = process.env.PORT || 5501;
+
+// Configuración de multer para almacenar archivos de imágenes
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-' + file.originalname);
+    }
+});
+const upload = multer({ storage: storage });
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -12,10 +24,18 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.static(path.join(__dirname)));
 
+// Crea el directorio uploads si no existe
+if (!fs.existsSync('uploads')) {
+    fs.mkdirSync('uploads');
+}
+
+//Endpoint para la página principal
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+
+//Manejo de los resultados
 let results = {
     form1: {}, form2: {}, form3: {}, form4: {}, form5: {},
     form6: {}, form7: {}, form8: {}, form9: {}, form10: {},
@@ -257,6 +277,26 @@ app.delete('/teams/:id', (req, res) => {
     teams.teams = teams.teams.filter(team => team.id !== teamId);
     fs.writeFileSync('./teams.json', JSON.stringify(teams, null, 2));
     res.status(204).end();
+});
+
+// Endpoint para crear una nueva estación
+app.post('/createStation', upload.single('image'), (req, res) => {
+    const newStation = {
+        id: getNextId(teams).toString(),
+        name: req.body.name,
+        objective: req.body.objective,
+        image: req.file ? req.file.filename : null
+    };
+    // Aquí puedes guardar la estación en tu base de datos o archivo
+    // Por simplicidad, la agregaremos a un array y guardaremos en un archivo JSON
+    let stations = [];
+    if (fs.existsSync('stations.json')) {
+        stations = JSON.parse(fs.readFileSync('stations.json', 'utf8'));
+    }
+    stations.push(newStation);
+    fs.writeFileSync('stations.json', JSON.stringify(stations, null, 2));
+
+    res.status(201).json(newStation);
 });
 
 // Endpoint para eliminar todos los resultados
