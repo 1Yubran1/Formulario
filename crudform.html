@@ -62,7 +62,7 @@
             }).then(data => {
                 showAlert('Estación creada exitosamente.', 'success');
                 setTimeout(() => {
-                    window.location.href = `/estacion.html?id=${data.id}`;
+                    window.location.href = `/form.html?id=${data.id}`;
                 }, 2000);
             }).catch(error => {
                 console.error('Error:', error);
